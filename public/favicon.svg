@@ -1,8 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
 	<style>
-		rect { fill: #2f5d8a; }
-		@media (prefers-color-scheme: dark) { rect { fill: #8db4dc; } }
+		rect { fill: #222222; }
+		path { stroke: #ffffff; }
+		@media (prefers-color-scheme: dark) {
+			rect { fill: #ffffff; }
+			path { stroke: #222222; }
+		}
 	</style>
-	<rect width="32" height="32" rx="7" />
-	<text x="16" y="22" text-anchor="middle" font-family="-apple-system, Helvetica, Arial, sans-serif" font-size="17" font-weight="600" fill="#fff">U</text>
+	<rect width="32" height="32" rx="6" />
+	<path d="M10.75 7.5v10a5.25 5.25 0 0 0 10.5 0v-10" fill="none" stroke-width="3.5" />
 </svg>

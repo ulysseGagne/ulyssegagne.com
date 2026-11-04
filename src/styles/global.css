@@ -214,15 +214,26 @@ main ol > li {
 	padding-left: 1.8em;
 }
 
-main ol ol > li {
-	padding-left: 2.6em;
-}
-
 main ol > li::before {
-	content: counters(item, '.') '.';
+	content: counter(item) '.';
 	position: absolute;
 	left: 0;
 	font-variant-numeric: tabular-nums;
+}
+
+/* A list inside a list counts on its own (sub), after its parent's number: 1.1., 1.2.
+   Two counters rather than counters(): a list earlier on the page can't leak into a later one (the notes). */
+main ol ol {
+	counter-reset: sub;
+}
+
+main ol ol > li {
+	counter-increment: sub;
+	padding-left: 2.6em;
+}
+
+main ol ol > li::before {
+	content: counter(item) '.' counter(sub) '.';
 }
 
 .contains-task-list {
@@ -370,7 +381,8 @@ p:has(> img) > em:last-child {
 
 p:has(> img + img) {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+	/* Three phone screenshots still fit on one line on a phone. */
+	grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
 	gap: 12px;
 	align-items: start;
 }

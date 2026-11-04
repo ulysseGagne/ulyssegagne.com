@@ -1,0 +1,51 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { address } from '../address';
+
+// The pages that do exist: every page of site/, except the hidden ones.
+const pages = (await getCollection('pages', (page) => !page.data.noindex))
+	.map((page) => ({ href: address(page.id), title: page.data.title }))
+	.sort((a, b) => a.href.localeCompare(b.href));
+---
+
+<Base title="Ce fichier n’existe pas" description="Il n’y a pas de page à cette adresse." noindex>
+	<h1>Ce fichier n’existe pas</h1>
+	<p>Voici ceux qui existent&nbsp;:</p>
+	<ul>
+		{
+			pages.map((page) => (
+				<li>
+					<a href={page.href}>{page.title}</a>
+				</li>
+			))
+		}
+	</ul>
+	<script is:inline>
+		// The path at the top shows the address that was asked for. An address ending in a slash is the same page without it.
+		{
+			const path = location.pathname;
+			if (path.length > 1 && path.endsWith('/')) {
+				location.replace(path.replace(/\/+$/, '') + location.search + location.hash);
+			} else {
+				const home = document.createElement('a');
+				home.href = '/';
+				home.textContent = 'ulyssegagne.com';
+				const crumbs = path.split('/').filter(Boolean).flatMap((part) => {
+					const sep = document.createElement('span');
+					sep.className = 'sep';
+					sep.textContent = '/';
+					const name = document.createElement('span');
+					name.className = 'here';
+					try {
+						name.textContent = decodeURIComponent(part);
+					} catch {
+						name.textContent = part;
+					}
+					return [sep, name];
+				});
+				document.querySelector('.path').replaceChildren(home, ...crumbs);
+			}
+		}
+	</script>
+</Base>

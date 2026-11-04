@@ -1,11 +1,13 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import { address } from '../address';
+import { typeset } from '../plugins/remark-french.mjs';
 
 export async function getStaticPaths() {
 	const pages = await getCollection('pages');
 	return pages.map((page) => ({
-		params: { slug: page.id === 'index' ? undefined : page.id.replace(/\/index$/, '') },
+		params: { slug: address(page.id).slice(1) || undefined },
 		props: { page },
 	}));
 }
@@ -18,18 +20,18 @@ function format(value: unknown) {
 	if (value instanceof Date) {
 		return value.toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 	}
-	return Array.isArray(value) ? value.join(', ') : String(value);
+	return typeset(Array.isArray(value) ? value.join(', ') : String(value));
 }
 ---
 
-<Base title={title} description={description ?? title} noindex={noindex}>
-	<h1>{title}</h1>
+<Base title={typeset(title)} description={description ?? title} noindex={noindex}>
+	<h1>{typeset(title)}</h1>
 	{
 		Object.keys(facts).length > 0 && (
 			<dl class="facts">
 				{Object.entries(facts).map(([label, value]) => (
 					<>
-						<dt>{label}</dt>
+						<dt>{typeset(label)}</dt>
 						<dd>{format(value)}</dd>
 					</>
 				))}
