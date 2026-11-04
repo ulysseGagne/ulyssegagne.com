@@ -1,8 +1,10 @@
 // Obsidian's Markdown extras, so that a page written in Obsidian renders the same on the site:
 // callouts (> [!note] Title), folds (> [!note]- Title, or + to start open) and highlights (==text==).
+// A note for the editor, <!-- like this -->, stays out of the page, as in Obsidian's reading view.
 
 const CALLOUT = /^\[!([\w-]+)\]([+-]?)[ \t]*/;
 const HIGHLIGHT = /==([^=\n]+)==/g;
+const COMMENT = /^\s*<!--[\s\S]*?-->\s*$/;
 
 export default function remarkObsidian() {
 	return (tree) => visit(tree);
@@ -10,7 +12,9 @@ export default function remarkObsidian() {
 
 function visit(node) {
 	if (!node.children) return;
-	node.children = node.children.flatMap(splitHighlights);
+	node.children = node.children
+		.filter((child) => !(child.type === 'html' && COMMENT.test(child.value)))
+		.flatMap(splitHighlights);
 	for (const child of node.children) visit(child);
 	if (node.type === 'blockquote') toCallout(node);
 }

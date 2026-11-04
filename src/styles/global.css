@@ -120,6 +120,16 @@ dl {
 	margin: 0 0 1em;
 }
 
+/* The page's photo, above its title: a square, like a Notion page's icon */
+
+img.photo {
+	width: 96px;
+	height: 96px;
+	aspect-ratio: 1;
+	object-fit: cover;
+	margin-bottom: 20px;
+}
+
 /* The page's facts, under its title */
 
 .facts {

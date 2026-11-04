@@ -25,7 +25,7 @@ Every element a page can use, with the Markdown that makes it: `site/guide-de-st
    ---
    ```
 
-   `title` is the page's title. `description` doesn't show on the page: search engines and link previews use it. Any other property (`date`, `lieu`, `avec`…) shows as a fact under the title. `noindex: true` keeps a page out of search engines.
+   `title` is the page's title. `description` doesn't show on the page: search engines and link previews use it. Any other property (`date`, `lieu`, `avec`…) shows as a fact under the title; a web address or an email shows as a link. `photo: ./images/ulysse-gagne.jpg` puts a photo above the title, cropped square, and makes it the page's image in link previews. `noindex: true` keeps a page out of search engines.
 3. Write the page in plain Markdown, with ordinary spaces: the site keeps « », : and numbers like 7 300 from breaking across lines.
 4. Link to it from another page: `[one-line](/projets/one-line)`.
 

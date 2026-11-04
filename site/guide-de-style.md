@@ -2,21 +2,45 @@
 title: Guide de style
 description: Tous les éléments du site, et le Markdown qui les produit.
 noindex: true
+photo: ./images/ulysse-gagne.jpg
 date: 2026-11-04
 statut: première version
+courriel: ulysse.gagne.1@ulaval.ca
+github: https://github.com/ulysseGagne
 ---
 
 Chaque page du site est un fichier Markdown, avec ses images à côté. Voici chaque élément, suivi du Markdown qui le produit.
 
+## La photo
+
+La propriété `photo` met une image au-dessus du titre, coupée en carré, comme l'icône d'une page Notion. C'est aussi l'image de la page quand on partage son lien. Une page sans `photo` n'en montre pas.
+
+```md
+---
+photo: ./images/ulysse-gagne.jpg
+---
+```
+
 ## Les faits sous le titre
 
-Les propriétés en haut du fichier deviennent les faits sous le titre de la page. Celles de cette page :
+Les propriétés en haut du fichier deviennent les faits sous le titre de la page :
 
 ```md
 ---
 title: Guide de style
 date: 2026-11-04
 statut: première version
+---
+```
+
+## Les liens dans les faits
+
+Une adresse web ou un courriel, dans les propriétés, devient un lien. L'adresse web s'affiche sans son https://.
+
+```md
+---
+courriel: ulysse.gagne.1@ulaval.ca
+github: https://github.com/ulysseGagne
 ---
 ```
 
@@ -130,6 +154,16 @@ Le jeu s'inspire de Jet Lag: The Game[^1].
 Le jeu s'inspire de Jet Lag: The Game[^1].
 
 [^1]: Une série YouTube de Wendover Productions.
+```
+
+## Une note pour soi
+
+Un commentaire reste dans le fichier, mais pas sur la page. Il y en a un juste ici.
+
+<!-- La capture du 19 octobre va ici. -->
+
+```md
+<!-- La capture du 19 octobre va ici. -->
 ```
 
 ## Une image
