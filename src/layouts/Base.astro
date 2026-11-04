@@ -1,25 +1,82 @@
 ---
 import '../styles/global.css';
+import { getCollection } from 'astro:content';
+import { address } from '../address';
 
 interface Props {
 	title: string;
 	description: string;
+	noindex?: boolean;
+	// The page's image in link previews: its photo, if it has one.
+	image?: { src: string; width: number; height: number };
 }
 
-const { title, description } = Astro.props;
+const { title, description, noindex = false, image } = Astro.props;
+const name = 'Ulysse Gagné';
+
+// This page's address, as it reads in the browser: its path, without the .html of its file.
+const here = decode(Astro.url.pathname).replace(/\.html$/, '').replace(/\/index$/, '') || '/';
+const url = new URL(here, Astro.site).href;
+
+// The path at the top: the folders down to this page, each one a link up when it has a page.
+const pages = await getCollection('pages');
+const addresses = new Set(pages.map((page) => address(page.id)));
+const parts = here.split('/').filter(Boolean);
+const crumbs = parts.map((part, i) => {
+	const href = '/' + parts.slice(0, i + 1).join('/');
+	return { name: part, href: i < parts.length - 1 && addresses.has(href) ? href : null };
+});
+
+function decode(path: string) {
+	try {
+		return decodeURI(path);
+	} catch {
+		return path;
+	}
+}
 ---
 
-<html lang="fr">
+<html lang="fr-CA">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
+		<title>{title === name ? name : `${title} · ${name}`}</title>
 		<meta name="description" content={description} />
-		<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+		{noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={url} />}
+		<link rel="icon" href="/favicon.ico" sizes="32x32" />
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content={name} />
+		<meta property="og:locale" content="fr_CA" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		{!noindex && <meta property="og:url" content={url} />}
+		{
+			image && (
+				<>
+					<meta property="og:image" content={new URL(image.src, Astro.site).href} />
+					<meta property="og:image:width" content={String(image.width)} />
+					<meta property="og:image:height" content={String(image.height)} />
+					<meta property="og:image:alt" content={title} />
+				</>
+			)
+		}
+		<meta name="twitter:card" content="summary" />
+		<meta name="generator" content={Astro.generator} />
 	</head>
 	<body>
+		<nav class="path" aria-label="Chemin">
+			{parts.length > 0 ? <a href="/">ulyssegagne.com</a> : <span class="here">ulyssegagne.com</span>}
+			{
+				crumbs.map((crumb) => (
+					<>
+						<span class="sep">/</span>
+						{crumb.href ? <a href={crumb.href}>{crumb.name}</a> : <span class="here">{crumb.name}</span>}
+					</>
+				))
+			}
+		</nav>
 		<main>
 			<slot />
 		</main>

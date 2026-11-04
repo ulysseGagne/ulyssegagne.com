@@ -1,11 +1,63 @@
 # ulyssegagne.com
 
-Ulysse Gagné's personal website, built with [Astro](https://astro.build) and published on GitHub Pages at [ulyssegagne.com](https://ulyssegagne.com).
+Ulysse Gagné's personal website: a folder of Markdown files, turned into web pages by [Astro](https://astro.build) and published on GitHub Pages at [ulyssegagne.com](https://ulyssegagne.com).
+
+## Where pages live
+
+The whole site is the folder `site/`. Each `.md` file is a page, at the address of its path:
+
+- `site/index.md` is the home page, ulyssegagne.com (« À propos »).
+- `site/tuteur.md` is ulyssegagne.com/tuteur.
+- `site/projets/hide-and-stalk.md` is ulyssegagne.com/projets/hide-and-stalk.
+
+Every element a page can use, with the Markdown that makes it: `site/guide-de-style.md`, at ulyssegagne.com/guide-de-style (hidden from search engines).
+
+## Add a page
+
+1. Create a `.md` file in `site/`, named as its address should read: lowercase, hyphens, no spaces. `site/projets/one-line.md` becomes ulyssegagne.com/projets/one-line.
+2. Start it with its properties:
+
+   ```md
+   ---
+   title: one-line
+   description: Le plus long parcours de course dans un quartier, sans jamais reprendre la même rue.
+   date: 2026-03-01
+   ---
+   ```
+
+   `title` is the page's title. `description` doesn't show on the page: search engines and link previews use it. Any other property (`date`, `lieu`, `avec`…) shows as a fact under the title; a web address or an email shows as a link. `photo: ./images/ulysse-gagne.jpg` puts a photo above the title, cropped square, and makes it the page's image in link previews. `noindex: true` keeps a page out of search engines.
+3. Write the page in plain Markdown, with ordinary spaces: the site keeps « », : and numbers like 7 300 from breaking across lines.
+4. Link to it from another page: `[one-line](/projets/one-line)`.
+
+## Add an image
+
+1. Put the file in `site/images/`, with a plain name: `one-line-1-map.png`.
+2. Write it where it goes, with its path from the page: `![What it shows](./images/one-line-1-map.png)` in a page of `site/`, `../images/one-line-1-map.png` in a page of `site/projets/`.
+3. If you want a caption, an italic line right under the image, its file name: `*one-line-1-map.png*`. Several images on one line sit side by side.
+
+No need to shrink images first: each one is made light (WebP) when the site is built.
+
+## In Obsidian
+
+- Obsidian's `[[links]]` and `![[images]]` don't work on the site: write them as above. Callouts, folds and `==highlights==` do work.
+- A note for yourself: `<!-- like this -->`, hidden on the page. Obsidian's `%% comments %%` would show.
+- Everything in `site/` is public, notes included: the repository is public.
+
+## Preview
 
 ```bash
-npm install
-npm run dev     # local preview at http://localhost:4321
-npm run build   # static site in dist/
+npm install     # once, and after package.json changes
+npm run dev     # http://localhost:4321, updates as you save
 ```
 
-Every push to `main` deploys the site (`.github/workflows/deploy.yml`).
+## Publish
+
+Merge into `main`: the site goes online about a minute later (`.github/workflows/deploy.yml`). A pull request is built first, so a page that breaks the site shows as a red ✗ before you merge.
+
+## The code
+
+- `src/content.config.ts`: `site/` as a collection of pages.
+- `src/pages/[...slug].astro`: one HTML file per page. `src/layouts/Base.astro`: the path at the top, and the tags for search engines and link previews.
+- `src/styles/global.css`: the design system.
+- `src/plugins/`: Obsidian's extras, and French spacing.
+- `src/pages/404.astro` and `sitemap.xml.ts`; `public/`: the favicon and `robots.txt`.

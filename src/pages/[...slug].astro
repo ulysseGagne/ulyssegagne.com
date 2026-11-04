@@ -1,0 +1,63 @@
+---
+import { getCollection, render } from 'astro:content';
+import { Image, getImage } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import { address } from '../address';
+import { typeset } from '../plugins/remark-french.mjs';
+
+export async function getStaticPaths() {
+	const pages = await getCollection('pages');
+	return pages.map((page) => ({
+		params: { slug: address(page.id).slice(1) || undefined },
+		props: { page },
+	}));
+}
+
+const { page } = Astro.props;
+const { Content } = await render(page);
+const { title, description, noindex, photo, ...facts } = page.data;
+
+// The photo is also the page's image when its link is shared: a square, as on the page.
+const share = photo && (await getImage({ src: photo, width: 1200, height: 1200, format: 'jpg', quality: 80 }));
+
+function format(value: unknown) {
+	if (value instanceof Date) {
+		return value.toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+	}
+	return typeset(Array.isArray(value) ? value.join(', ') : String(value));
+}
+
+// A fact that is a web address or an email address is a link; a web address shows without its https://.
+function link(value: unknown) {
+	if (typeof value !== 'string') return null;
+	if (/^https?:\/\/\S+$/.test(value)) return { href: value, text: value.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '') };
+	if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return { href: `mailto:${value}`, text: value };
+	return null;
+}
+---
+
+<Base
+	title={typeset(title)}
+	description={description ?? title}
+	noindex={noindex}
+	image={share ? { src: share.src, width: 1200, height: 1200 } : undefined}
+>
+	{photo && <Image src={photo} width={96} height={96} densities={[1, 2]} alt="" class="photo" priority />}
+	<h1>{typeset(title)}</h1>
+	{
+		Object.keys(facts).length > 0 && (
+			<dl class="facts">
+				{Object.entries(facts).map(([label, value]) => {
+					const to = link(value);
+					return (
+						<>
+							<dt>{typeset(label)}</dt>
+							<dd>{to ? <a href={to.href}>{to.text}</a> : format(value)}</dd>
+						</>
+					);
+				})}
+			</dl>
+		)
+	}
+	<Content />
+</Base>
