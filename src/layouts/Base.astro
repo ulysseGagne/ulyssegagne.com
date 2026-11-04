@@ -64,6 +64,7 @@ function decode(path: string) {
 		}
 		<meta name="twitter:card" content="summary" />
 		<meta name="generator" content={Astro.generator} />
+		<slot name="head" />
 	</head>
 	<body>
 		<nav class="path" aria-label="Chemin">

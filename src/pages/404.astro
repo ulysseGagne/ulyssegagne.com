@@ -10,6 +10,18 @@ const pages = (await getCollection('pages', (page) => !page.data.noindex))
 ---
 
 <Base title="Ce fichier n’existe pas" description="Il n’y a pas de page à cette adresse." noindex>
+	<script is:inline slot="head">
+		// GitHub Pages answers ulyssegagne.com/tuteur/ with this page: an address ending in a slash is the same page without it.
+		// The head hides the page and leaves before anything shows. The new address starts with one slash and keeps this origin:
+		// ulyssegagne.com//example.com/ must not leave the site.
+		{
+			const { pathname, search, hash, origin } = location;
+			if (pathname.length > 1 && pathname.endsWith('/')) {
+				document.documentElement.style.display = 'none';
+				location.replace(origin + '/' + pathname.replace(/^\/+|\/+$/g, '') + search + hash);
+			}
+		}
+	</script>
 	<h1>Ce fichier n’existe pas</h1>
 	<p>Voici ceux qui existent&nbsp;:</p>
 	<ul>
@@ -22,30 +34,25 @@ const pages = (await getCollection('pages', (page) => !page.data.noindex))
 		}
 	</ul>
 	<script is:inline>
-		// The path at the top shows the address that was asked for. An address ending in a slash is the same page without it.
+		// The path at the top shows the address that was asked for.
 		{
-			const path = location.pathname;
-			if (path.length > 1 && path.endsWith('/')) {
-				location.replace(path.replace(/\/+$/, '') + location.search + location.hash);
-			} else {
-				const home = document.createElement('a');
-				home.href = '/';
-				home.textContent = 'ulyssegagne.com';
-				const crumbs = path.split('/').filter(Boolean).flatMap((part) => {
-					const sep = document.createElement('span');
-					sep.className = 'sep';
-					sep.textContent = '/';
-					const name = document.createElement('span');
-					name.className = 'here';
-					try {
-						name.textContent = decodeURIComponent(part);
-					} catch {
-						name.textContent = part;
-					}
-					return [sep, name];
-				});
-				document.querySelector('.path').replaceChildren(home, ...crumbs);
-			}
+			const home = document.createElement('a');
+			home.href = '/';
+			home.textContent = 'ulyssegagne.com';
+			const crumbs = location.pathname.split('/').filter(Boolean).flatMap((part) => {
+				const sep = document.createElement('span');
+				sep.className = 'sep';
+				sep.textContent = '/';
+				const name = document.createElement('span');
+				name.className = 'here';
+				try {
+					name.textContent = decodeURIComponent(part);
+				} catch {
+					name.textContent = part;
+				}
+				return [sep, name];
+			});
+			document.querySelector('.path').replaceChildren(home, ...crumbs);
 		}
 	</script>
 </Base>

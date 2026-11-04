@@ -10,6 +10,8 @@ The whole site is the folder `site/`. Each `.md` file is a page, at the address 
 - `site/tuteur.md` is ulyssegagne.com/tuteur.
 - `site/projets/hide-and-stalk.md` is ulyssegagne.com/projets/hide-and-stalk.
 
+An address with a slash at the end, `ulyssegagne.com/tuteur/`, lands on the same page: GitHub Pages answers it with the 404 page, whose script in the `<head>` hides the page and goes to the address without the slash (`src/pages/404.astro`). The real addresses stay without a slash, served as they are, with no redirect.
+
 Every element a page can use, with the Markdown that makes it: `site/guide-de-style.md`, at ulyssegagne.com/guide-de-style (hidden from search engines).
 
 ## Add a page
