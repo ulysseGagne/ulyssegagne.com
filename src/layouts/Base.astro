@@ -68,7 +68,16 @@ function decode(path: string) {
 	</head>
 	<body>
 		<nav class="path" aria-label="Chemin">
-			{parts.length > 0 ? <a href="/">ulyssegagne.com</a> : <span class="here">ulyssegagne.com</span>}
+			{
+				parts.length > 0 ? (
+					<a href="/">ulyssegagne.com</a>
+				) : (
+					<>
+						<span class="here">ulyssegagne.com</span>
+						<span class="sep">/</span>
+					</>
+				)
+			}
 			{
 				crumbs.map((crumb) => (
 					<>

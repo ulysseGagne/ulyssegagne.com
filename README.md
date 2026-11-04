@@ -69,7 +69,7 @@ Then check that the deploy went through (the repository's Actions tab) and reloa
 ## The code
 
 - `src/content.config.ts`: `site/` as a collection of pages.
-- `src/pages/[...slug].astro`: one HTML file per page. `src/layouts/Base.astro`: the path at the top, and the tags for search engines and link previews.
+- `src/pages/[...slug].astro`: one HTML file per page. `src/layouts/Base.astro`: the path at the top (`ulyssegagne.com/` on the home page, `ulyssegagne.com/tuteur` on the others), and the tags for search engines and link previews.
 - `src/styles/global.css`: the design system.
 - `src/plugins/`: Obsidian's extras, French spacing, and `rehype-external-links.mjs`: a link to another site opens in a new tab (`target="_blank" rel="noopener noreferrer"`), in the Markdown by itself and, in a layout's own `<a>`, with `NEW_TAB` when `isOutside(href, Astro.site)`.
 - `src/pages/404.astro` and `sitemap.xml.ts`; `public/`: the favicon and `robots.txt`.
