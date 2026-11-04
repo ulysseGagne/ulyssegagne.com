@@ -12,6 +12,6 @@ Un cache-cache sur tout le campus, environ 2 km², pour le Club d'intelligence a
 
 L'idée vient de Jet Lag: The Game[^1]. J'ai conçu le jeu : les règles, les questions, l'équilibre. Félix Larrivée a codé la première version de l'app; après deux parties d'essai en septembre, je l'ai repensée avec Claude Code.
 
-Une partie du début à la fin, en anglais comme l'app : [la démo](https://ulyssegagne.github.io/hide-and-stalk/how-to-play/).
+Une partie du début à la fin : [la démo](https://ulyssegagne.github.io/hide-and-stalk/how-to-play/).
 
 [^1]: Une série YouTube de Wendover Productions.
