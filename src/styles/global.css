@@ -48,7 +48,6 @@ body {
 	max-width: var(--measure);
 	margin: 0 auto;
 	padding: 1.25rem 1rem 0;
-	text-align: center;
 	font-size: 13px;
 	color: var(--muted);
 }
