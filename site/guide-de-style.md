@@ -57,7 +57,7 @@ github: https://github.com/ulysseGagne
 
 ## Le texte
 
-Un paragraphe en **gras**, en *italique*, ==surligné==, avec du `code` et [un lien vers une page du site](/guide-de-style). Un lien qui sort du site finit par une flèche : [le site de Steph Ango](https://stephango.com).
+Un paragraphe en **gras**, en *italique*, ==surligné==, avec du `code` et [un lien vers une page du site](/guide-de-style). Un lien qui sort du site finit par une flèche et s'ouvre dans un nouvel onglet : [le site de Steph Ango](https://stephango.com).
 
 ```md
 Un paragraphe en **gras**, en *italique*, ==surligné==, avec du `code` et [un lien](/guide-de-style).

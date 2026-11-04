@@ -4,6 +4,7 @@ import { Image, getImage } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import { address } from '../address';
 import { typeset } from '../plugins/remark-french.mjs';
+import { NEW_TAB, isOutside } from '../plugins/rehype-external-links.mjs';
 
 export async function getStaticPaths() {
 	const pages = await getCollection('pages');
@@ -52,7 +53,7 @@ function link(value: unknown) {
 					return (
 						<>
 							<dt>{typeset(label)}</dt>
-							<dd>{to ? <a href={to.href}>{to.text}</a> : format(value)}</dd>
+							<dd>{to ? <a href={to.href} {...(isOutside(to.href, Astro.site) ? NEW_TAB : {})}>{to.text}</a> : format(value)}</dd>
 						</>
 					);
 				})}

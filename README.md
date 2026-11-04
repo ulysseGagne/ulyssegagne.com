@@ -29,7 +29,7 @@ Every element a page can use, with the Markdown that makes it: `site/guide-de-st
 
    `title` is the page's title. `description` doesn't show on the page: search engines and link previews use it. Any other property (`date`, `lieu`, `avec`…) shows as a fact under the title; a web address or an email shows as a link. `photo: ./images/ulysse-gagne.jpg` puts a photo above the title, cropped square, and makes it the page's image in link previews. `noindex: true` keeps a page out of search engines.
 3. Write the page in plain Markdown, with ordinary spaces: the site keeps « », : and numbers like 7 300 from breaking across lines.
-4. Link to it from another page: `[[one-line]]`, as in Documents, or `[one-line](/projets/one-line)`.
+4. Link to it from another page: `[[one-line]]`, as in Documents, or `[one-line](/projets/one-line)`. A link to another site, `[Claude Code](https://claude.com/product/claude-code)`, opens in a new tab on its own.
 
 ## Add an image
 
@@ -71,5 +71,5 @@ Then check that the deploy went through (the repository's Actions tab) and reloa
 - `src/content.config.ts`: `site/` as a collection of pages.
 - `src/pages/[...slug].astro`: one HTML file per page. `src/layouts/Base.astro`: the path at the top, and the tags for search engines and link previews.
 - `src/styles/global.css`: the design system.
-- `src/plugins/`: Obsidian's extras, and French spacing.
+- `src/plugins/`: Obsidian's extras, French spacing, and `rehype-external-links.mjs`: a link to another site opens in a new tab (`target="_blank" rel="noopener noreferrer"`), in the Markdown by itself and, in a layout's own `<a>`, with `NEW_TAB` when `isOutside(href, Astro.site)`.
 - `src/pages/404.astro` and `sitemap.xml.ts`; `public/`: the favicon and `robots.txt`.

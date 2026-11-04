@@ -3,10 +3,13 @@ import { defineConfig } from 'astro/config';
 import { unified } from '@astrojs/markdown-remark';
 import remarkObsidian from './src/plugins/remark-obsidian.mjs';
 import remarkFrench from './src/plugins/remark-french.mjs';
+import rehypeExternalLinks from './src/plugins/rehype-external-links.mjs';
+
+const site = 'https://ulyssegagne.com';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://ulyssegagne.com',
+	site,
 	// Each page is one HTML file, so its address is its path, as the top of the page shows it:
 	// ulyssegagne.com/projets/hide-and-stalk, no slash at the end, served by GitHub Pages without a redirect.
 	build: {
@@ -27,6 +30,8 @@ export default defineConfig({
 		// with French spacing (src/plugins/remark-french.mjs).
 		processor: unified({
 			remarkPlugins: [remarkObsidian, remarkFrench],
+			// A link to another site opens in a new tab (src/plugins/rehype-external-links.mjs).
+			rehypePlugins: [[rehypeExternalLinks, { site }]],
 			remarkRehype: { footnoteLabel: 'Notes', footnoteBackLabel: 'Retour au texte' },
 		}),
 	},
