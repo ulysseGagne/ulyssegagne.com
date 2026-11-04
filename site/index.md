@@ -1,14 +1,14 @@
 ---
 title: Ulysse Gagné
-description: Je suis leader des activités au Club d'intelligence artificielle de l'Université Laval, et je bâtis le tuteur socratique avec lequel j'étudie.
+description: Je suis Leader au Club d'intelligence artificielle de l'Université Laval. En ce moment, je bâtis le tuteur socratique avec lequel j'étudie.
 photo: ./images/ulysse-gagne.jpg
 courriel: ulysse.gagne.1@ulaval.ca
 github: https://github.com/ulysseGagne
 ---
 
-Je suis leader des activités au Club d'intelligence artificielle de l'Université Laval, et je bâtis le [tuteur socratique](/tuteur) avec lequel j'étudie.
+Je suis Leader au Club d'intelligence artificielle de l'Université Laval. En ce moment, je bâtis le [tuteur socratique](/tuteur) avec lequel j'étudie.
 
-À 24 ans, j'ai eu la chance d'apprendre de plusieurs façons : par projets au secondaire, à distance au cégep, seul en ligne, et maintenant avec l'IA, au baccalauréat en informatique.
+Durant mon parcours scolaire, j'ai eu la chance de vivre différentes approches pédagogiques : un programme axé sur la résolution de problèmes en collaboration (PROTIC), la formation à distance (Cégep à distance), l'apprentissage autonome en ligne (Codecademy) et, plus récemment, l'apprentissage avec l'IA.
 
 ## Projets
 
@@ -44,4 +44,4 @@ Je suis leader des activités au Club d'intelligence artificielle de l'Universit
 
 ---
 
-Fait à quatre mains avec Claude ♥︎
+Fait en collaboration avec Claude
