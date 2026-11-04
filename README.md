@@ -52,7 +52,17 @@ npm run dev     # http://localhost:4321, updates as you save
 
 ## Publish
 
-Merge into `main`: the site goes online about a minute later (`.github/workflows/deploy.yml`). A pull request is built first, so a page that breaks the site shows as a red ✗ before you merge.
+Every push to `main` goes online a minute or two later (`.github/workflows/deploy.yml`). Work in small steps, each one online as soon as it's done:
+
+```bash
+npm run build          # must end without errors
+git add -A
+git commit -m "What changed"
+git pull --rebase      # other sessions push to main too
+git push               # never --force
+```
+
+Then check that the deploy went through (the repository's Actions tab) and reload the page. Several sessions can work on the site at once: each one touches only its own pages. A pull request is still built before it's merged, when a change needs a check first.
 
 ## The code
 
