@@ -1,12 +1,23 @@
 ---
 import '../styles/global.css';
+import { getCollection } from 'astro:content';
 
 interface Props {
 	title: string;
 	description: string;
+	noindex?: boolean;
 }
 
-const { title, description } = Astro.props;
+const { title, description, noindex = false } = Astro.props;
+
+// The path at the top: the folders down to this page, each one a link up when it has a page.
+const pages = await getCollection('pages');
+const addresses = new Set(pages.map((page) => '/' + page.id.replace(/(^|\/)index$/, '')));
+const parts = Astro.url.pathname.split('/').filter(Boolean);
+const crumbs = parts.map((name, i) => {
+	const href = '/' + parts.slice(0, i + 1).join('/');
+	return { name, href: i < parts.length - 1 && addresses.has(href) ? href : null };
+});
 ---
 
 <html lang="fr">
@@ -18,8 +29,20 @@ const { title, description } = Astro.props;
 		<title>{title}</title>
 		<meta name="description" content={description} />
 		<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+		{noindex && <meta name="robots" content="noindex" />}
 	</head>
 	<body>
+		<nav class="path" aria-label="Chemin">
+			{parts.length > 0 ? <a href="/">ulyssegagne.com</a> : <span class="here">ulyssegagne.com</span>}
+			{
+				crumbs.map((crumb) => (
+					<>
+						<span class="sep">/</span>
+						{crumb.href ? <a href={crumb.href}>{crumb.name}</a> : <span class="here">{crumb.name}</span>}
+					</>
+				))
+			}
+		</nav>
 		<main>
 			<slot />
 		</main>

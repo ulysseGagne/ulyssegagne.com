@@ -1,23 +1,20 @@
+/* The design system: a calm document in black and white, every element drawn from these values.
+   The style guide page, site/guide-de-style.md, shows each one with its Markdown. */
 :root {
-	--bg: #fbfaf7;
-	--text: #1d1d1b;
-	--muted: #6b6a66;
-	--accent: #2f5d8a;
-	--line: #e4e1da;
-	--font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-	--measure: 40rem;
+	--bg: #ffffff;
+	--text: #222222;
+	--muted: #5c5c5c;
+	--line: #e0e0e0;
+	--wash: #f5f5f5;
+	--accent: #0066cc;
+	--highlight: rgba(255, 208, 0, 0.4);
+	--font: ui-sans-serif, -apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI', Roboto, sans-serif;
+	--mono: ui-monospace, SFMono-Regular, 'Cascadia Mono', 'Roboto Mono', Menlo, Consolas, monospace;
+	--measure: 700px;
+	--radius: 4px;
+	--fold: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%23222222' d='M3.2 4.5h9.6a.9.9 0 0 1 .77 1.37l-4.8 7.9a.9.9 0 0 1-1.54 0l-4.8-7.9A.9.9 0 0 1 3.2 4.5z'/%3E%3C/svg%3E");
+	--check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.4'%3E%3Cpath d='M3 8.5 6.5 12 13 4.5'/%3E%3C/svg%3E");
 	color-scheme: light;
-}
-
-@media (prefers-color-scheme: dark) {
-	:root {
-		--bg: #161615;
-		--text: #ecebe7;
-		--muted: #9d9b95;
-		--accent: #8db4dc;
-		--line: #2d2c29;
-		color-scheme: dark;
-	}
 }
 
 *,
@@ -31,31 +28,364 @@ body {
 	background: var(--bg);
 	color: var(--text);
 	font-family: var(--font);
-	font-size: 1.0625rem;
-	line-height: 1.6;
+	font-size: 16px;
+	line-height: 1.5;
 	-webkit-font-smoothing: antialiased;
+}
+
+::selection {
+	background: rgba(0, 102, 204, 0.22);
+}
+
+:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+}
+
+/* The path at the top */
+
+.path {
+	max-width: var(--measure);
+	margin: 0 auto;
+	padding: 1.25rem 1rem 0;
+	text-align: center;
+	font-size: 13px;
+	color: var(--muted);
+}
+
+.path a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.path a:hover {
+	color: var(--accent);
+}
+
+.path .sep {
+	margin: 0 0.4em;
+}
+
+.path .here {
+	color: var(--text);
 }
 
 main {
 	max-width: var(--measure);
 	margin: 0 auto;
-	padding: 4rem 1rem;
+	padding: 2.5rem 1rem 6rem;
+}
+
+/* Headings, at Obsidian's sizes */
+
+h1,
+h2,
+h3,
+h4 {
+	line-height: 1.2;
+	margin: 2em 0 0.5em;
 }
 
 h1 {
-	font-size: 2rem;
-	line-height: 1.2;
-	margin: 0 0 0.5rem;
+	font-size: 1.618em;
+	font-weight: 700;
+	margin-top: 0;
 }
 
-p {
-	margin: 0 0 1rem;
+h2 {
+	font-size: 1.462em;
+	font-weight: 600;
+}
+
+h3 {
+	font-size: 1.318em;
+	font-weight: 600;
+	line-height: 1.3;
+}
+
+h4 {
+	font-size: 1.188em;
+	font-weight: 600;
+	line-height: 1.4;
+}
+
+p,
+ul,
+ol,
+blockquote,
+pre,
+aside,
+details,
+dl {
+	margin: 0 0 1em;
+}
+
+/* The page's facts, under its title */
+
+.facts {
+	display: grid;
+	grid-template-columns: minmax(7em, max-content) 1fr;
+	gap: 4px 24px;
+	margin-bottom: 2em;
+	font-size: 14px;
+}
+
+.facts dt {
+	color: var(--muted);
+}
+
+.facts dd {
+	margin: 0;
+}
+
+/* Text */
+
+strong {
+	font-weight: 600;
+}
+
+mark {
+	background: var(--highlight);
+	color: inherit;
 }
 
 a {
+	color: inherit;
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 2px;
+}
+
+a:hover {
 	color: var(--accent);
 }
 
-.muted {
+main a[href^='http']:not([href^='https://ulyssegagne.com'])::after {
+	content: '↗';
+	display: inline-block;
+	margin-left: 0.15em;
+	font-size: 0.85em;
+}
+
+code {
+	font-family: var(--mono);
+	font-size: 0.875em;
+	background: var(--wash);
+	border-radius: var(--radius);
+	padding: 0.1em 0.3em;
+}
+
+pre {
+	background: var(--wash);
+	border-radius: var(--radius);
+	padding: 14px 16px;
+	overflow-x: auto;
+}
+
+pre code {
+	background: none;
+	padding: 0;
+}
+
+/* Lists: black bullets at every level, numbers that nest (1., 1.1.) */
+
+ul {
+	padding-left: 1.6em;
+}
+
+ul ul {
+	list-style-type: disc;
+}
+
+li > ul,
+li > ol {
+	margin: 0.15em 0 0;
+}
+
+main ol {
+	list-style: none;
+	counter-reset: item;
+	padding-left: 0;
+}
+
+main ol > li {
+	counter-increment: item;
+	position: relative;
+	padding-left: 1.8em;
+}
+
+main ol ol > li {
+	padding-left: 2.6em;
+}
+
+main ol > li::before {
+	content: counters(item, '.') '.';
+	position: absolute;
+	left: 0;
+	font-variant-numeric: tabular-nums;
+}
+
+.contains-task-list {
+	list-style: none;
+	padding-left: 0;
+}
+
+.task-list-item input[type='checkbox'] {
+	appearance: none;
+	width: 16px;
+	height: 16px;
+	margin: 0 8px 0 0;
+	border: 1.5px solid var(--text);
+	border-radius: var(--radius);
+	vertical-align: -3px;
+}
+
+.task-list-item input[type='checkbox']:checked {
+	border-color: var(--accent);
+	background: var(--accent) var(--check) center / 11px no-repeat;
+}
+
+.task-list-item:has(input:checked) {
 	color: var(--muted);
+	text-decoration: line-through;
+}
+
+/* Blocks */
+
+blockquote {
+	margin-left: 0;
+	margin-right: 0;
+	padding-left: 14px;
+	border-left: 3px solid var(--text);
+}
+
+.callout {
+	padding: 12px 16px;
+	background: var(--wash);
+	border-radius: var(--radius);
+}
+
+.callout-title {
+	font-weight: 600;
+	margin-bottom: 0.25em;
+}
+
+blockquote > :last-child,
+.callout > :last-child,
+.fold > :last-child {
+	margin-bottom: 0;
+}
+
+.fold > summary {
+	position: relative;
+	display: block;
+	padding-left: 28px;
+	list-style: none;
+	cursor: pointer;
+}
+
+.fold > summary::-webkit-details-marker {
+	display: none;
+}
+
+.fold > summary::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 24px;
+	height: 24px;
+	border-radius: var(--radius);
+	background: var(--fold) center / 0.8em no-repeat;
+	transform: rotate(-90deg);
+	transition: transform 0.2s ease-out;
+}
+
+.fold > summary:hover::before {
+	background-color: rgba(0, 0, 0, 0.06);
+}
+
+.fold[open] > summary {
+	margin-bottom: 0.5em;
+}
+
+.fold[open] > summary::before {
+	transform: rotate(0);
+}
+
+.fold > :not(summary) {
+	margin-left: 28px;
+}
+
+hr {
+	margin: 2em 0;
+	border: 0;
+	border-top: 1px solid var(--line);
+}
+
+/* Sources: numbered notes at the end, as on Wikipedia */
+
+sup a {
+	text-decoration: none;
+}
+
+.footnotes {
+	margin-top: 3em;
+	padding-top: 1em;
+	border-top: 1px solid var(--line);
+	font-size: 0.875em;
+	color: var(--muted);
+}
+
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+}
+
+/* Images: square, as wide as the text, a tall one no taller than the screen.
+   An italic line right under an image is its caption: its file name, if wanted.
+   Several images on one line sit side by side. */
+
+img {
+	display: block;
+	width: auto;
+	max-width: 100%;
+	height: auto;
+	max-height: 80vh;
+}
+
+p:has(> img) > em:last-child {
+	display: block;
+	margin-top: 6px;
+	font-family: var(--mono);
+	font-size: 12px;
+	font-style: normal;
+	color: var(--muted);
+}
+
+p:has(> img + img) {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+	gap: 12px;
+	align-items: start;
+}
+
+p:has(> img + img) > img {
+	width: 100%;
+	max-height: none;
+}
+
+p:has(> img + img) > em:last-child {
+	grid-column: 1 / -1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.fold > summary::before {
+		transition: none;
+	}
 }
