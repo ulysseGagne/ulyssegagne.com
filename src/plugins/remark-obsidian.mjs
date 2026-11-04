@@ -1,22 +1,83 @@
 // Obsidian's Markdown extras, so that a page written in Obsidian renders the same on the site:
 // callouts (> [!note] Title), folds (> [!note]- Title, or + to start open) and highlights (==text==).
+// Links as in Documents: [[tuteur]] is the page named tuteur.md anywhere in site/, shown with its title;
+// [[tuteur|text]] shows the text; ![[photo.jpg]] is an image found the same way.
 // A note for the editor, <!-- like this -->, stays out of the page, as in Obsidian's reading view.
+
+import fs from 'node:fs';
+import path from 'node:path';
+import { typeset } from './remark-french.mjs';
 
 const CALLOUT = /^\[!([\w-]+)\]([+-]?)[ \t]*/;
 const HIGHLIGHT = /==([^=\n]+)==/g;
 const COMMENT = /^\s*<!--[\s\S]*?-->\s*$/;
+const WIKILINK = /(!?)\[\[([^\]|]+?)(?:\|([^\]]*))?\]\]/g;
+const IMAGE = /\.(png|jpe?g|gif|webp|avif|svg)$/i;
 
 export default function remarkObsidian() {
-	return (tree) => visit(tree);
+	return (tree, file) => visit(tree, { ...siteFiles(), from: file.path });
 }
 
-function visit(node) {
+function visit(node, site) {
 	if (!node.children) return;
 	node.children = node.children
 		.filter((child) => !(child.type === 'html' && COMMENT.test(child.value)))
+		.flatMap((child) => splitWikilinks(child, site))
 		.flatMap(splitHighlights);
-	for (const child of node.children) visit(child);
+	for (const child of node.children) visit(child, site);
 	if (node.type === 'blockquote') toCallout(node);
+}
+
+// Every page and image in site/, by its path and by its file name alone, as Obsidian finds them.
+function siteFiles() {
+	const root = path.resolve('site');
+	const pages = new Map();
+	const images = new Map();
+	for (const rel of fs.readdirSync(root, { recursive: true })) {
+		const posix = rel.split(path.sep).join('/');
+		const file = path.join(root, rel);
+		if (posix.endsWith('.md')) {
+			const id = posix.slice(0, -3);
+			const page = { href: '/' + id.replace(/(^|\/)index$/, ''), title: titleOf(file) ?? path.basename(id) };
+			for (const key of [id, path.basename(id)]) pages.set(key.toLowerCase(), page);
+		} else if (IMAGE.test(posix)) {
+			for (const key of [posix, path.basename(posix)]) images.set(key.toLowerCase(), file);
+		}
+	}
+	return { pages, images };
+}
+
+function titleOf(file) {
+	const front = /^---\r?\n([\s\S]*?)\r?\n---/.exec(fs.readFileSync(file, 'utf8'));
+	const title = front && /^title:\s*(.+?)\s*$/m.exec(front[1]);
+	return title ? typeset(title[1].replace(/^(['"])(.*)\1$/, '$2')) : null;
+}
+
+function splitWikilinks(node, site) {
+	if (node.type !== 'text' || !node.value.includes('[[')) return [node];
+	const parts = [];
+	let last = 0;
+	for (const match of node.value.matchAll(WIKILINK)) {
+		const [whole, embed, target, text] = match;
+		const name = target.split('#')[0].trim().replace(/\.md$/, '').toLowerCase();
+		if (match.index > last) parts.push({ type: 'text', value: node.value.slice(last, match.index) });
+		const image = embed && site.images.get(name);
+		const page = !embed && site.pages.get(name);
+		if (image) {
+			const url = path.relative(path.dirname(site.from), image).split(path.sep).join('/');
+			// In Obsidian, ![[photo.jpg|300]] sets a width: not an alt text.
+			const alt = text && !/^\d+(x\d+)?$/.test(text) ? text : '';
+			parts.push({ type: 'image', url: url.startsWith('.') ? url : './' + url, alt });
+		} else if (page) {
+			parts.push({ type: 'link', url: page.href, children: [{ type: 'text', value: text || page.title }] });
+		} else {
+			console.warn(`[obsidian] ${whole} in ${path.relative(process.cwd(), site.from)}: no such file in site/`);
+			parts.push({ type: 'text', value: text || target });
+		}
+		last = match.index + whole.length;
+	}
+	if (last < node.value.length) parts.push({ type: 'text', value: node.value.slice(last) });
+	return parts;
 }
 
 function splitHighlights(node) {

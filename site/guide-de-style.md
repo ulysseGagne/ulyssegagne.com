@@ -64,6 +64,15 @@ Un paragraphe en **gras**, en *italique*, ==surligné==, avec du `code` et [un l
 Un lien qui sort du site : [le site de Steph Ango](https://stephango.com).
 ```
 
+## Les liens d'Obsidian
+
+Comme dans Documents, un lien peut nommer un fichier, où qu'il soit dans le site : [[tuteur]] montre le titre de sa page, [[hide-and-stalk|le cache-cache]] montre son propre texte. Une image se nomme de la même façon, avec un point d'exclamation devant.
+
+```md
+[[tuteur]] montre le titre de sa page, [[hide-and-stalk|le cache-cache]] montre son propre texte.
+![[ulysse-gagne.jpg]]
+```
+
 ## Les listes
 
 - Trouver une cachette

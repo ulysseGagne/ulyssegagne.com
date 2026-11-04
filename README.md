@@ -27,19 +27,19 @@ Every element a page can use, with the Markdown that makes it: `site/guide-de-st
 
    `title` is the page's title. `description` doesn't show on the page: search engines and link previews use it. Any other property (`date`, `lieu`, `avec`…) shows as a fact under the title; a web address or an email shows as a link. `photo: ./images/ulysse-gagne.jpg` puts a photo above the title, cropped square, and makes it the page's image in link previews. `noindex: true` keeps a page out of search engines.
 3. Write the page in plain Markdown, with ordinary spaces: the site keeps « », : and numbers like 7 300 from breaking across lines.
-4. Link to it from another page: `[one-line](/projets/one-line)`.
+4. Link to it from another page: `[[one-line]]`, as in Documents, or `[one-line](/projets/one-line)`.
 
 ## Add an image
 
 1. Put the file in `site/images/`, with a plain name: `one-line-1-map.png`.
-2. Write it where it goes, with its path from the page: `![What it shows](./images/one-line-1-map.png)` in a page of `site/`, `../images/one-line-1-map.png` in a page of `site/projets/`.
+2. Write it where it goes: `![[one-line-1-map.png]]`, as Obsidian does, or with its path from the page and a description, `![What it shows](./images/one-line-1-map.png)` (`../images/…` from a page in `site/projets/`).
 3. If you want a caption, an italic line right under the image, its file name: `*one-line-1-map.png*`. Several images on one line sit side by side.
 
 No need to shrink images first: each one is made light (WebP) when the site is built.
 
 ## In Obsidian
 
-- Obsidian's `[[links]]` and `![[images]]` don't work on the site: write them as above. Callouts, folds and `==highlights==` do work.
+- Links work as in Documents: `[[tuteur]]` is the page named `tuteur.md` anywhere in `site/`, shown with its title; `[[tuteur|other words]]` shows other words; `![[photo.jpg]]` is an image anywhere in `site/`. A name that matches no file shows as plain text, and the build prints a warning. Callouts, folds and `==highlights==` work too.
 - A note for yourself: `<!-- like this -->`, hidden on the page. Obsidian's `%% comments %%` would show.
 - Everything in `site/` is public, notes included: the repository is public.
 
