@@ -37,7 +37,7 @@ Every element a page can use, with the Markdown that makes it: `site/guide-de-st
 
 1. Move its file, with git: `git mv site/course.md site/a-propos/course.md`.
 2. Add its old address to `src/moved.ts`, `'/course': '/a-propos/course'`: the 404 page sends the old address on, so links to it from elsewhere keep working.
-3. Links written `[[course]]` follow the file on their own; links written with the address, `[…](/course)`, take the new one.
+3. Links written `[[course]]` follow the file on their own; links written with the address, `[…](/course)`, take the new one. A preview already running keeps the old links until it restarts: `npm run dev` and `npm run build` start from scratch (`--force`), since Astro would otherwise reuse the last render of every file that didn't change.
 
 ## Add an image
 

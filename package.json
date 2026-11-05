@@ -6,8 +6,8 @@
     "node": ">=22.23.4"
   },
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
+    "dev": "astro dev --force",
+    "build": "astro build --force",
     "preview": "astro preview",
     "astro": "astro"
   },
