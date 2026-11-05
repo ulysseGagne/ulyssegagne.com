@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import { address } from '../address';
+import { moved } from '../moved';
 
 // The pages that do exist: every page of site/, except the hidden ones.
 const pages = (await getCollection('pages', (page) => !page.data.noindex))
@@ -10,15 +11,19 @@ const pages = (await getCollection('pages', (page) => !page.data.noindex))
 ---
 
 <Base title="Ce fichier n’existe pas" description="Il n’y a pas de page à cette adresse." noindex>
-	<script is:inline slot="head">
-		// GitHub Pages answers ulyssegagne.com/tuteur/ with this page: an address ending in a slash is the same page without it.
+	<script is:inline slot="head" define:vars={{ moved }}>
+		// GitHub Pages answers every address without a file with this page. Two kinds go on to a page that exists:
+		// an address ending in a slash is the same page without it (ulyssegagne.com/tuteur/ is /tuteur),
+		// and a page that moved is at its new address (ulyssegagne.com/course is /a-propos/course: src/moved.ts).
 		// The head hides the page and leaves before anything shows. The new address starts with one slash and keeps this origin:
 		// ulyssegagne.com//example.com/ must not leave the site.
 		{
 			const { pathname, search, hash, origin } = location;
-			if (pathname.length > 1 && pathname.endsWith('/')) {
+			const path = '/' + pathname.replace(/^\/+|\/+$/g, '');
+			const to = moved[path] ?? (path === pathname ? null : path);
+			if (to) {
 				document.documentElement.style.display = 'none';
-				location.replace(origin + '/' + pathname.replace(/^\/+|\/+$/g, '') + search + hash);
+				location.replace(origin + to + search + hash);
 			}
 		}
 	</script>
