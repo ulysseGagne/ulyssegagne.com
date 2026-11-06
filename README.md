@@ -16,6 +16,8 @@ An address with a slash at the end, `ulyssegagne.com/tuteur/`, lands on the same
 
 Every element a page can use, with the Markdown that makes it: `site/guide-de-style.md`, at ulyssegagne.com/guide-de-style (hidden from search engines).
 
+One page lives outside `site/`: `public/never-enough.html`, at ulyssegagne.com/never-enough, a standalone page in English that plays clips of Dr. K's YouTube videos in order. It copies the site's look but not its build, no page links to it, and it stays out of search engines; its words and its list of clips are in the file itself.
+
 ## Add a page
 
 1. Create a `.md` file in `site/`, named as its address should read: lowercase, hyphens, no spaces. `site/a-propos/one-line.md` becomes ulyssegagne.com/a-propos/one-line.
