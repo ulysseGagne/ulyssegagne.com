@@ -4,7 +4,7 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>Never enough · Ulysse Gagné</title>
-		<meta name="description" content="Dr. K on why doing well never feels like enough, where it comes from, and the way out: 23 clips from his videos, about 36 minutes." />
+		<meta name="description" content="Dr. K on why doing well never feels like enough, where it comes from, and the way out: five long stretches from five of his videos, 45 minutes, played as one." />
 		<meta name="robots" content="noindex" />
 		<link rel="icon" href="/favicon.ico" sizes="32x32" />
 		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -13,7 +13,7 @@
 		<meta property="og:site_name" content="Ulysse Gagné" />
 		<meta property="og:locale" content="en_CA" />
 		<meta property="og:title" content="Never enough" />
-		<meta property="og:description" content="Dr. K on why doing well never feels like enough, where it comes from, and the way out: 23 clips, about 36 minutes." />
+		<meta property="og:description" content="Dr. K on why doing well never feels like enough, where it comes from, and the way out: 45 minutes from five of his videos, played as one." />
 		<style>
 			/* The site's design system (src/styles/global.css): a calm document in black and white. */
 			:root {
@@ -30,27 +30,20 @@
 				color-scheme: light;
 			}
 			*, *::before, *::after { box-sizing: border-box; }
-			body {
-				margin: 0;
-				background: var(--bg);
-				color: var(--text);
-				font-family: var(--font);
-				font-size: 16px;
-				line-height: 1.5;
-				-webkit-font-smoothing: antialiased;
-			}
+			body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font); font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
 			::selection { background: rgba(0, 102, 204, 0.22); }
 			:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 			a { color: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
 			a:hover { color: var(--accent); }
 			a.out::after { content: '↗'; display: inline-block; margin-left: 0.15em; font-size: 0.85em; }
+			button, select { font: inherit; color: inherit; }
+			button { cursor: pointer; }
 
 			.path { max-width: var(--measure); margin: 0 auto; padding: 1.25rem 1rem 0; font-size: 13px; color: var(--muted); }
 			.path a { color: inherit; text-decoration: none; }
 			.path a:hover { color: var(--accent); }
 			.path .sep { margin: 0 0.4em; }
 			.path .here { color: var(--text); }
-
 			main { max-width: var(--measure); margin: 0 auto; padding: 2.5rem 1rem 6rem; }
 			h1, h2, h3 { line-height: 1.2; margin: 2em 0 0.5em; }
 			h1 { font-size: 1.618em; font-weight: 700; margin-top: 0; }
@@ -60,41 +53,72 @@
 			.muted { color: var(--muted); }
 			.small { font-size: 14px; }
 
-			/* The player and what's playing */
-			.screen { position: relative; aspect-ratio: 16 / 9; background: #000; border-radius: var(--radius); overflow: hidden; margin: 2em 0 0; }
-			.screen iframe, .screen #player { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-			.now { border: 1px solid var(--line); border-top: 0; border-radius: 0 0 var(--radius) var(--radius); padding: 14px 16px 16px; }
-			.now .label { font-size: 13px; color: var(--muted); margin: 0 0 4px; }
-			.now h3 { font-size: 1.188em; margin: 0 0 4px; }
-			.now .note { margin: 0 0 8px; }
-			.now .source { font-size: 14px; color: var(--muted); margin: 0 0 12px; }
-			.controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-			button { font: inherit; color: inherit; cursor: pointer; }
-			.btn { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 12px; font-size: 15px; }
+			/* The player: one screen, one bar for the whole thing, one row of buttons */
+			.stage { margin: 2em 0 0; }
+			.screen { position: relative; aspect-ratio: 16 / 9; background: #000; border-radius: var(--radius) var(--radius) 0 0; overflow: hidden; }
+			.frame, .frame iframe, #player { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+			.card { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; padding: 6% 9%; background: #111; color: #fff; }
+			.card[hidden] { display: none; }
+			.card-part { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #aaa; margin: 0 0 0.6em; }
+			.card-title { font-size: clamp(1.35em, 4.2vw, 2.2em); font-weight: 700; line-height: 1.15; margin: 0 0 0.45em; }
+			.card-src { color: #d6d6d6; margin: 0 0 1.4em; max-width: 34em; }
+			.card-go { align-self: flex-start; background: #fff; color: #111; border: 0; border-radius: var(--radius); padding: 7px 14px; font-weight: 600; }
+
+			.track { position: relative; height: 26px; display: flex; align-items: center; cursor: pointer; touch-action: none; user-select: none; -webkit-user-select: none; }
+			.blocks { display: flex; gap: 3px; width: 100%; height: 6px; transition: height 0.12s; }
+			.track:hover .blocks, .track.drag .blocks { height: 9px; }
+			.blk { position: relative; height: 100%; background: var(--line); }
+			.blk:first-child { border-radius: 2px 0 0 2px; }
+			.blk:last-child { border-radius: 0 2px 2px 0; }
+			.fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: var(--text); }
+			.tick { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--bg); opacity: 0.85; }
+			.knob { position: absolute; top: 50%; width: 14px; height: 14px; border-radius: 50%; background: var(--text); transform: translate(-50%, -50%); pointer-events: none; }
+			.tip { position: absolute; bottom: 28px; transform: translateX(-50%); background: #222; color: #fff; font-size: 12px; line-height: 1.3; padding: 4px 7px; border-radius: 3px; white-space: nowrap; pointer-events: none; }
+			.tip[hidden] { display: none; }
+
+			.controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding-bottom: 2px; }
+			.btn { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 5px 11px; font-size: 15px; line-height: 1.4; }
 			.btn:hover { border-color: var(--text); }
-			.btn.primary { background: var(--text); border-color: var(--text); color: var(--bg); }
-			.btn.primary:hover { background: #000; }
-			.btn:disabled { opacity: 0.4; cursor: default; border-color: var(--line); }
-			.restart { margin-left: auto; font-size: 14px; color: var(--muted); background: none; border: 0; padding: 6px 0; text-decoration: underline; text-underline-offset: 2px; }
-			.bar { height: 3px; background: var(--line); border-radius: 2px; margin: 14px 0 6px; overflow: hidden; }
-			.bar span { display: block; height: 100%; width: 0; background: var(--text); transition: width 0.25s linear; }
-			.time { font-family: var(--mono); font-size: 12px; color: var(--muted); margin: 0; }
-			.alert { font-size: 14px; color: #b00020; margin: 10px 0 0; }
+			.btn.primary { background: var(--text); border-color: var(--text); color: var(--bg); min-width: 6.5em; }
+			.btn[aria-pressed='true'] { background: var(--text); color: var(--bg); border-color: var(--text); }
+			.btn svg { width: 16px; height: 16px; vertical-align: -3px; }
+			.time { font-family: var(--mono); font-size: 13px; color: var(--muted); margin: 0 4px; white-space: nowrap; }
+			.spacer { flex: 1; }
+			.speed { font-size: 14px; color: var(--muted); }
+			.speed select { border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg); padding: 4px 4px; font-size: 14px; color: var(--text); }
+			.alert { font-size: 14px; color: #b00020; margin: 8px 0 0; }
 			.alert:empty { display: none; }
 
-			/* The parts and their clips */
-			.part .blurb { color: var(--muted); }
+			/* Full screen: the real one, or a fixed layer where the browser has none (iPhone) */
+			.stage:fullscreen, .stage.pseudo { background: #000; color: #fff; display: flex; flex-direction: column; justify-content: center; margin: 0; padding: 0 14px 12px; }
+			.stage.pseudo { position: fixed; inset: 0; z-index: 50; }
+			.stage:fullscreen .screen, .stage.pseudo .screen { flex: 1; aspect-ratio: auto; border-radius: 0; }
+			.stage:fullscreen .blk, .stage.pseudo .blk { background: #555; }
+			.stage:fullscreen .fill, .stage.pseudo .fill, .stage:fullscreen .knob, .stage.pseudo .knob { background: #fff; }
+			.stage:fullscreen .tick, .stage.pseudo .tick { background: #000; }
+			.stage:fullscreen .btn, .stage.pseudo .btn, .stage:fullscreen .speed select, .stage.pseudo .speed select { background: #000; color: #fff; border-color: #555; }
+			.stage:fullscreen .btn.primary, .stage.pseudo .btn.primary, .stage:fullscreen .btn[aria-pressed='true'], .stage.pseudo .btn[aria-pressed='true'] { background: #fff; color: #000; border-color: #fff; }
+			.stage:fullscreen .time, .stage.pseudo .time, .stage:fullscreen .speed, .stage.pseudo .speed { color: #ccc; }
+
+			/* What's playing */
+			.now { border-top: 1px solid var(--line); margin-top: 10px; padding-top: 12px; }
+			.now .label { font-size: 13px; color: var(--muted); margin: 0 0 4px; }
+			.now h3 { font-size: 1.188em; margin: 0 0 4px; }
+			.now .note { margin: 0 0 6px; }
+			.now .source { font-size: 14px; color: var(--muted); margin: 0; }
+
+			/* The five parts, each with the video it comes from */
 			.part h2 .num { color: var(--muted); font-weight: 400; margin-right: 0.35em; }
-			ol.clips { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--line); }
-			ol.clips li { border-bottom: 1px solid var(--line); }
-			.clip { display: grid; grid-template-columns: 2.2em 1fr auto; gap: 2px 10px; width: 100%; text-align: left; background: none; border: 0; padding: 10px 6px 10px 4px; border-left: 3px solid transparent; }
-			.clip:hover { background: var(--wash); }
-			.clip .n { font-family: var(--mono); font-size: 12px; color: var(--muted); padding-top: 3px; }
-			.clip .t { font-weight: 600; }
-			.clip .d { font-family: var(--mono); font-size: 12px; color: var(--muted); padding-top: 3px; text-align: right; }
-			.clip .x { grid-column: 2 / 4; font-size: 14px; color: var(--muted); }
-			.clip.on { border-left-color: var(--text); background: var(--wash); }
-			.clip.seen .d::before { content: '✓ '; color: var(--text); }
+			.part .src { font-size: 14px; color: var(--muted); margin: -0.2em 0 0.6em; }
+			.part .src a { color: var(--text); }
+			ol.chs { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--line); }
+			ol.chs li { border-bottom: 1px solid var(--line); }
+			.ch { display: grid; grid-template-columns: 3.4em 1fr; gap: 1px 10px; width: 100%; text-align: left; background: none; border: 0; border-left: 3px solid transparent; padding: 9px 6px 9px 4px; }
+			.ch:hover { background: var(--wash); }
+			.ch .at { font-family: var(--mono); font-size: 12px; color: var(--muted); padding-top: 3px; }
+			.ch .t { font-weight: 600; }
+			.ch .x { grid-column: 2; font-size: 14px; color: var(--muted); }
+			.ch.on { border-left-color: var(--text); background: var(--wash); }
 
 			footer { margin-top: 3.5em; padding-top: 1.5em; border-top: 1px solid var(--line); }
 			footer h2 { font-size: 1.188em; margin-top: 0; }
@@ -103,9 +127,11 @@
 
 			@media (max-width: 520px) {
 				main { padding-top: 1.75rem; }
-				.screen { margin-left: -1rem; margin-right: -1rem; border-radius: 0; }
-				.now { margin-left: -1rem; margin-right: -1rem; border-left: 0; border-right: 0; border-radius: 0; }
-				.restart { margin-left: 0; }
+				.stage:not(.pseudo):not(:fullscreen) { margin-left: -1rem; margin-right: -1rem; }
+				.stage:not(.pseudo):not(:fullscreen) .screen { border-radius: 0; }
+				.stage:not(.pseudo):not(:fullscreen) .track, .stage:not(.pseudo):not(:fullscreen) .controls { margin-left: 1rem; margin-right: 1rem; }
+				.speed .word { display: none; }
+				.btn { padding: 5px 9px; }
 			}
 		</style>
 	</head>
@@ -114,79 +140,150 @@
 		<main>
 			<h1>Never enough</h1>
 			<p class="lead">Why doing well never feels like enough, where that comes from, and the way out.</p>
-			<p>Dr. K (Dr. Alok Kanojia) is a psychiatrist trained at Harvard who, before medical school, spent years studying to become a monk. On his YouTube channel, HealthyGamerGG, he explains how the mind works, in plain words. Here are 23 clips from nine of his videos, put in an order that tells one story, in five parts. Only Dr. K talks.</p>
-			<p>Press play: the clips run one after another, about 36 minutes in all. Stop anytime; this page remembers where you were.</p>
+			<p>Dr. K (Dr. Alok Kanojia) is a psychiatrist trained at Harvard who, before medical school, spent years studying to become a monk. On his YouTube channel, HealthyGamerGG, he explains how the mind works, in plain words.</p>
+			<p>Here are five long stretches from five of his videos, 45 minutes in all, in an order that tells one story. Only Dr. K talks. It plays as one video: the bar under it covers all of it, so you can jump anywhere or go back, and a title card says which video comes next.</p>
 
-			<div class="screen"><div id="player"></div></div>
+			<div class="stage" id="stage">
+				<div class="screen">
+					<div class="frame" id="frame"><div id="player"></div></div>
+					<div class="card" id="card" hidden>
+						<p class="card-part" id="card-part"></p>
+						<p class="card-title" id="card-title"></p>
+						<p class="card-src" id="card-src"></p>
+						<button class="card-go" id="card-go" type="button">Play now</button>
+					</div>
+				</div>
+				<div class="track" id="track" role="slider" tabindex="0" aria-label="Position in the video" aria-valuemin="0">
+					<div class="blocks" id="blocks"></div>
+					<div class="knob" id="knob"></div>
+					<div class="tip" id="tip" hidden></div>
+				</div>
+				<div class="controls">
+					<button class="btn primary" id="play" type="button">▶ Play</button>
+					<button class="btn" id="back" type="button" aria-label="Back 10 seconds">−10 s</button>
+					<button class="btn" id="fwd" type="button" aria-label="Forward 10 seconds">+10 s</button>
+					<span class="time" id="time"></span>
+					<span class="spacer"></span>
+					<label class="speed"><span class="word">Speed </span><select id="speed" aria-label="Speed"><option value="1">1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="1.75">1.75×</option><option value="2">2×</option></select></label>
+					<button class="btn" id="cc" type="button" aria-pressed="false" title="Captions">CC</button>
+					<button class="btn" id="fs" type="button" aria-label="Full screen" title="Full screen"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4" /></svg></button>
+				</div>
+				<p class="alert" id="alert" role="status"></p>
+			</div>
+
 			<section class="now">
-				<p class="label" id="now-label"></p>
+				<p class="label" id="now-part"></p>
 				<h3 id="now-title" aria-live="polite"></h3>
 				<p class="note" id="now-note"></p>
-				<p class="source" id="now-source"></p>
-				<div class="controls">
-					<button class="btn" id="prev" type="button" aria-label="Previous clip">← Previous</button>
-					<button class="btn primary" id="go" type="button">▶ Play</button>
-					<button class="btn" id="next" type="button" aria-label="Next clip">Next →</button>
-					<button class="restart" id="restart" type="button" hidden>Start over</button>
-				</div>
-				<div class="bar" aria-hidden="true"><span id="bar"></span></div>
-				<p class="time" id="time"></p>
-				<p class="alert" id="alert" role="status"></p>
+				<p class="source" id="now-src"></p>
 			</section>
 
 			<div id="parts"></div>
 
 			<footer>
-				<h2>The full videos</h2>
-				<p class="small muted">Each clip plays from Dr. K's own videos on YouTube, so the views go to him. Here they are in full:</p>
+				<h2>The five videos</h2>
+				<p class="small muted">Everything plays from Dr. K's own videos on YouTube, so the views go to him. Here they are in full:</p>
 				<ol id="sources" class="small"></ol>
+				<p class="small muted">Keyboard: space to play or pause, ← and → to move 10 seconds, F for full screen, C for captions.</p>
 				<p class="small muted">Dr. K is a psychiatrist, and his videos are general education, not medical advice for anyone in particular. This page isn't made by or affiliated with Healthy Gamer.</p>
 			</footer>
 		</main>
 
 		<script>
-			const VIDEOS = {"ZIjBj63W8KU": {"t": "Why Being the Most Reliable Person Is Ruining You", "d": "2026-10-03"}, "w5HhFDIoNEs": {"t": "The Addiction You Have (That You Don't Know About)", "d": "2023-08-15"}, "4i2j8x3SCMY": {"t": "Shame For Not Being Successful", "d": "2022-08-21"}, "k0iUzEJQ1so": {"t": "How High Performers Get Ahead", "d": "2026-01-25"}, "7SFhQBxdznQ": {"t": "Stop Using Shame to Motivate Yourself", "d": "2025-12-23"}, "x6NSpxthHw4": {"t": "What High Performers KNOW That YOU Don't", "d": "2024-04-20"}, "yaAFG1ooO0Y": {"t": "The Hidden Cost Of 'Keeping It Together' (High Functioning Depression)", "d": "2026-04-01"}, "oJUz-s5PhsU": {"t": "Why You Don't Feel Good Enough", "d": "2025-04-03"}, "s-ITMcC1JNg": {"t": "Working on Everything While Working on Everything While Working on Everything", "d": "2022-05-10"}};
-			const PARTS = [{"t": "It's never enough", "b": "What it looks like from the outside, then from the inside."}, {"t": "Where it starts", "b": "Love that depends on how well you do. Dr. K calls it conditional love."}, {"t": "Why success doesn't fix it", "b": "The parents' voice moves inside, and the finish line keeps moving."}, {"t": "Why it's so hard to stop", "b": "It works. That's the trap."}, {"t": "The way out", "b": "Not less ambition: a different fuel."}];
-			const CLIPS = [
-				{"id": "C1", "p": 0, "v": "k0iUzEJQ1so", "s": 44.9, "e": 89.9, "t": "Broken in the right way", "n": "What Dr. K sees in the high performers he treats: not just afraid of failing, terrified of it, all the way to bedtime."},
-				{"id": "C2", "p": 0, "v": "ZIjBj63W8KU", "s": 1501.4, "e": 1580.4, "t": "Standards no success can meet", "n": "Perfectionism that no achievement satisfies, a sense of worth that rides on doing well, and rest that feels dangerous."},
-				{"id": "C3", "p": 0, "v": "w5HhFDIoNEs", "s": 242.4, "e": 313.2, "t": "The relief never lasts", "n": "Rising to the top to quiet the insecurity: even a gold medal brings only next year's worry, and praise doesn't land."},
-				{"id": "C4", "p": 0, "v": "ZIjBj63W8KU", "s": 2107.1, "e": 2265.8, "t": "Overwork, a hum of anxiety, and luck", "n": "Working hard even when burnt out, a background anxiety that never finds relief, and every success put down to luck."},
-				{"id": "C5", "p": 1, "v": "w5HhFDIoNEs", "s": 0, "e": 81.1, "t": "Grades, grades, grades", "n": "Dr. K's own story: his father picked careers for his sons, and he learned that his worth depended on his results."},
-				{"id": "C6", "p": 1, "v": "k0iUzEJQ1so", "s": 290.8, "e": 346.4, "t": "Loved for performing", "n": "Many high performers grew up loved for their results, so the only time they feel secure is when they perform."},
-				{"id": "C7", "p": 1, "v": "7SFhQBxdznQ", "s": 203.4, "e": 246.2, "t": "Trying to make dad proud", "n": "Parents who never let their kids relax, and children who spend their lives trying to make their dad proud."},
-				{"id": "C8", "p": 1, "v": "ZIjBj63W8KU", "s": 757.9, "e": 872.6, "t": "Noticed when there's a win", "n": "A hard-working dad who's hard to reach, except when there's something to celebrate: the child learns that being good is how you get close."},
-				{"id": "C9", "p": 1, "v": "ZIjBj63W8KU", "s": 1669.8, "e": 1850.9, "t": "Achieving becomes safety", "n": "When acceptance at home depends on results, achieving stops being about achievement: it's how you stay safe. Even Dr. K's mother still compares him."},
-				{"id": "C10", "p": 2, "v": "ZIjBj63W8KU", "s": 1850.7, "e": 2050.1, "t": "The demanding parent in your head", "n": "Why doing well, again and again, doesn't build self-esteem: the inner critic is the parents' voice, taken on to stay safe. A solution, not a flaw."},
-				{"id": "C11", "p": 2, "v": "4i2j8x3SCMY", "s": 1434.2, "e": 1491.0, "t": "What you kept alive", "n": "To someone who knows the root is their parents: what matters is which of their beliefs you took on, and still keep alive."},
-				{"id": "C12", "p": 2, "v": "4i2j8x3SCMY", "s": 660.2, "e": 708.2, "t": "A finish line that keeps moving", "n": "The gap between you and a perfect version of you: no achievement closes it, because the ideal moves every time you get closer."},
-				{"id": "C13", "p": 2, "v": "oJUz-s5PhsU", "s": 1675.8, "e": 1725.7, "t": "When does it end?", "n": "If you improve so the future feels less risky, when do you get to feel content? (He's talking about someone who works on improving at everything, all the time.)"},
-				{"id": "C14", "p": 3, "v": "x6NSpxthHw4", "s": 638.0, "e": 783.4, "t": "Toxic fuel", "n": "Fixing a bad feeling by fixing the outside: a better performance review, a happier boss or parent. It pays off, and it costs suffering."},
-				{"id": "C15", "p": 3, "v": "w5HhFDIoNEs", "s": 480.6, "e": 607.9, "t": "Part of you doesn't want to change", "n": "Dr. K calls it an addiction to self-improvement: always needing to do better. It gets results and gives direction, so letting go feels like becoming the failure you fear."},
-				{"id": "C16", "p": 3, "v": "yaAFG1ooO0Y", "s": 629.9, "e": 726.3, "t": "When you want to quit, you double down", "n": "Turning the urge to quit into even more effort, until you're years deep in a life you don't enjoy."},
-				{"id": "C17", "p": 4, "v": "ZIjBj63W8KU", "s": 2300.1, "e": 2351.3, "t": "See the pattern", "n": "The first step is seeing it. The inner critic is trying to protect you; the goal is to feel safe without having to perform."},
-				{"id": "C18", "p": 4, "v": "w5HhFDIoNEs", "s": 612.9, "e": 704.9, "t": "Say it to someone", "n": "Emotional problems need emotional solutions: tell someone the fear, and let them care about you without your earning it."},
-				{"id": "C19", "p": 4, "v": "4i2j8x3SCMY", "s": 878.5, "e": 985.5, "t": "One step is enough", "n": "The same step feels like progress or like failure, depending on the goal it's measured against. The version of you that exists is good enough."},
-				{"id": "C20", "p": 4, "v": "7SFhQBxdznQ", "s": 612.6, "e": 688.2, "t": "The drive comes back", "n": "Without fear as fuel, motivation can dip for a while. Curiosity and the wish to create are quieter, but they're enough."},
-				{"id": "C21", "p": 4, "v": "ZIjBj63W8KU", "s": 2562.1, "e": 2658.4, "t": "A useless day off", "n": "Rest that isn't a plan to be more productive later: a day just for enjoyment, and the discomfort that comes with it."},
-				{"id": "C22", "p": 4, "v": "s-ITMcC1JNg", "s": 1014.7, "e": 1085.5, "t": "Two or three things at a time", "n": "When everything feels urgent, pick one thing, then two, never more than three. Life isn't a race."},
-				{"id": "C23", "p": 4, "v": "w5HhFDIoNEs", "s": 797.1, "e": 908.5, "t": "Stop running from the fire", "n": "A life spent avoiding disaster is exhausting. Stop running, and there's room to move toward what excites you."}
+			const VIDEOS = {"k0iUzEJQ1so": {"t": "How High Performers Get Ahead", "d": "2026-01-25"}, "x6NSpxthHw4": {"t": "What High Performers KNOW That YOU Don't", "d": "2024-04-20"}, "ZIjBj63W8KU": {"t": "Why Being the Most Reliable Person Is Ruining You", "d": "2026-10-03"}, "4i2j8x3SCMY": {"t": "Shame For Not Being Successful", "d": "2022-08-21"}, "w5HhFDIoNEs": {"t": "The Addiction You Have (That You Don't Know About)", "d": "2023-08-15"}};
+			const BLOCKS = [
+				{"t": "Broken in the right way", "v": "k0iUzEJQ1so", "sum": "Dr. K's wife asked him what makes high performers different. His answer: many are driven by fear and insecurity, often from growing up loved for their results."},
+				{"t": "Toxic fuel", "v": "x6NSpxthHw4", "sum": "Why so many high performers fix a bad feeling by fixing the outside: a better performance review, a happier boss, happier parents. It works, and it costs suffering."},
+				{"t": "The demanding parent in your head", "v": "ZIjBj63W8KU", "sum": "The longest part: standards no success can meet, where they come from, why doing well never builds self-esteem, what it does to you, and the first steps out."},
+				{"t": "A finish line that keeps moving", "v": "4i2j8x3SCMY", "sum": "Answering a 31-year-old who feels ashamed of not being successful enough: why no achievement closes the gap, and why the version of you that exists is good enough."},
+				{"t": "Stop running from the fire", "v": "w5HhFDIoNEs", "sum": "Back to the root, love that depended on performance, and the way out: say the fear to someone, and move toward what excites you instead of away from failure."}
+			];
+			const SEGS = [
+				{"b": 0, "v": "k0iUzEJQ1so", "s": 0, "e": 251.95},
+				{"b": 0, "v": "k0iUzEJQ1so", "s": 290.81, "e": 346.24},
+				{"b": 1, "v": "x6NSpxthHw4", "s": 599.65, "e": 840.4},
+				{"b": 2, "v": "ZIjBj63W8KU", "s": 757.85, "e": 872.52},
+				{"b": 2, "v": "ZIjBj63W8KU", "s": 1480.17, "e": 2351.16},
+				{"b": 2, "v": "ZIjBj63W8KU", "s": 2562.09, "e": 2658.35},
+				{"b": 3, "v": "4i2j8x3SCMY", "s": 400.57, "e": 708.28},
+				{"b": 3, "v": "4i2j8x3SCMY", "s": 822.73, "e": 985.4},
+				{"b": 4, "v": "w5HhFDIoNEs", "s": 0, "e": 50.27},
+				{"b": 4, "v": "w5HhFDIoNEs", "s": 170.97, "e": 313.19},
+				{"b": 4, "v": "w5HhFDIoNEs", "s": 480.57, "e": 908.45}
+			];
+			const CHAPTERS = [
+				{"b": 0, "at": 0, "t": "Broken in the right way", "n": "The people at the top are often terrified of failing, even at bedtime."},
+				{"b": 0, "at": 133.53, "t": "The pressure at home", "n": "Dr. K's own family: one son would be a doctor, the other a lawyer."},
+				{"b": 0, "at": 290.81, "t": "Loved for performing", "n": "Love that depended on results: secure only when performing at a very high level."},
+				{"b": 1, "at": 599.65, "t": "Toxic fuel", "n": "A bad review, an unhappy boss or parent: work harder. It pays off, and it's never enough."},
+				{"b": 2, "at": 757.85, "t": "Noticed when there's a win", "n": "A hard-working dad who's hard to reach, except when there's something to celebrate."},
+				{"b": 2, "at": 1480.17, "t": "Standards no success can meet", "n": "Perfectionism no achievement satisfies, and rest that feels dangerous."},
+				{"b": 2, "at": 1669.85, "t": "Where it comes from", "n": "When acceptance depends on results, achieving becomes how you stay safe."},
+				{"b": 2, "at": 1850.73, "t": "The demanding parent in your head", "n": "Why doing well never builds self-esteem: the inner critic is the parents' voice, a solution, not a flaw."},
+				{"b": 2, "at": 2049.93, "t": "What it does to you", "n": "Needing to look great, overwork even when burnt out, a hum of anxiety, success put down to luck."},
+				{"b": 2, "at": 2265.69, "t": "See the pattern", "n": "It isn't perfectionism: the goal is to feel safe without having to perform."},
+				{"b": 2, "at": 2562.09, "t": "A useless day off", "n": "Rest that isn't a plan to be more productive later."},
+				{"b": 3, "at": 400.57, "t": "The ideal self", "n": "Shame is the gap between you and a perfect you, and achievement only moves the target."},
+				{"b": 3, "at": 822.73, "t": "The ego always wants more", "n": "Another promotion, another goal: let go of the ideal, and a step forward feels like progress again."},
+				{"b": 3, "at": 952.97, "t": "Good enough", "n": "The version of you that exists is good enough, and that's the scary part."},
+				{"b": 4, "at": 0, "t": "The seed", "n": "Always needing to do better starts with love that depended on performance; even a gold medal doesn't quiet it."},
+				{"b": 4, "at": 480.57, "t": "Why it works", "n": "The insecurity gets results and gives direction, so part of you doesn't want to change."},
+				{"b": 4, "at": 612.87, "t": "Say it to someone", "n": "Emotional problems need emotional solutions: let someone care about you without your earning it."},
+				{"b": 4, "at": 797.07, "t": "Stop running from the fire", "n": "A life spent avoiding disaster is exhausting; stop running, and move toward what excites you."}
 			];
 
-			const KEY = 'never-enough:v1';
+			const KEY = 'never-enough:v2';
 			const $ = (id) => document.getElementById(id);
+			const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
 			const fmt = (sec) => {
-				sec = Math.max(0, Math.round(sec));
+				sec = Math.max(0, Math.floor(sec));
 				return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
 			};
-			const dur = (c) => c.e - c.s;
-			const TOTAL = CLIPS.reduce((a, c) => a + dur(c), 0);
-			const BEFORE = CLIPS.map((_, i) => CLIPS.slice(0, i).reduce((a, c) => a + dur(c), 0));
 			const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 			const when = (d) => MONTHS[Number(d.slice(5, 7)) - 1] + ' ' + d.slice(0, 4);
 			const watchUrl = (v, s) => 'https://www.youtube.com/watch?v=' + v + (s ? '&t=' + Math.floor(s) + 's' : '');
+			const outLink = (href, text) => {
+				const a = document.createElement('a');
+				a.href = href;
+				a.className = 'out';
+				a.target = '_blank';
+				a.rel = 'noopener';
+				a.textContent = text;
+				return a;
+			};
 
-			// What this viewer already watched, kept in this browser only.
+			// Every piece gets its place on the one timeline.
+			SEGS.forEach((g, i) => {
+				g.d = g.e - g.s;
+				g.g = i ? SEGS[i - 1].g + SEGS[i - 1].d : 0;
+			});
+			const TOTAL = SEGS[SEGS.length - 1].g + SEGS[SEGS.length - 1].d;
+			BLOCKS.forEach((b, i) => {
+				const mine = SEGS.filter((g) => g.b === i);
+				b.g = mine[0].g;
+				b.d = mine.reduce((a, g) => a + g.d, 0);
+				b.first = SEGS.indexOf(mine[0]);
+			});
+			CHAPTERS.forEach((c) => {
+				c.v = BLOCKS[c.b].v;
+				c.k = SEGS.findIndex((g) => g.b === c.b && c.at >= g.s - 0.05 && c.at < g.e);
+				c.gt = SEGS[c.k].g + Math.max(0, c.at - SEGS[c.k].s);
+			});
+			const locate = (x) => {
+				x = clamp(x, 0, TOTAL - 0.05);
+				let k = SEGS.findIndex((g) => x < g.g + g.d);
+				if (k < 0) k = SEGS.length - 1;
+				return { k, t: SEGS[k].s + (x - SEGS[k].g) };
+			};
+			const chapterAt = (x) => {
+				let c = 0;
+				CHAPTERS.forEach((ch, i) => {
+					if (ch.gt <= x + 0.05) c = i;
+				});
+				return c;
+			};
+
+			// Where this viewer stopped, kept in this browser only.
 			const store = {
 				read() {
 					try {
@@ -202,127 +299,150 @@
 				},
 			};
 			const saved = store.read();
-			const seen = new Set(Array.isArray(saved.seen) ? saved.seen : []);
-			let cur = Number.isInteger(saved.i) && saved.i >= 0 && saved.i < CLIPS.length ? saved.i : 0;
-			const resuming = cur > 0;
+			let pos = typeof saved.pos === 'number' && saved.pos > 3 && saved.pos < TOTAL - 3 ? saved.pos : 0;
+			const resuming = pos > 0;
+			const startPos = pos;
+			let hasPlayed = false;
 
-			// Two clips that follow each other in the same video play as one, without reloading.
-			const joined = (a, b) => a && b && a.v === b.v && Math.abs(b.s - a.e) < 2;
-			const lastOfRun = (i) => {
-				while (i + 1 < CLIPS.length && joined(CLIPS[i], CLIPS[i + 1])) i++;
-				return i;
-			};
+			// The bar: one block per video, a notch at each chapter
+			const blkEls = BLOCKS.map((b) => {
+				const el = document.createElement('div');
+				el.className = 'blk';
+				el.style.flex = b.d + ' 1 0';
+				const fill = document.createElement('div');
+				fill.className = 'fill';
+				el.append(fill);
+				CHAPTERS.filter((c) => c.b === BLOCKS.indexOf(b) && c.gt - b.g > 1).forEach((c) => {
+					const t = document.createElement('div');
+					t.className = 'tick';
+					t.style.left = ((100 * (c.gt - b.g)) / b.d).toFixed(3) + '%';
+					el.append(t);
+				});
+				$('blocks').append(el);
+				return { el, fill };
+			});
 
-			// The list of parts and clips
-			const rows = [];
-			PARTS.forEach((part, p) => {
+			// The five parts below the player
+			const chEls = [];
+			BLOCKS.forEach((b, i) => {
 				const sec = document.createElement('section');
 				sec.className = 'part';
 				const h = document.createElement('h2');
-				h.innerHTML = '<span class="num">' + (p + 1) + '</span>';
-				h.append(part.t);
-				const blurb = document.createElement('p');
-				blurb.className = 'blurb';
-				blurb.textContent = part.b;
+				h.innerHTML = '<span class="num">' + (i + 1) + '</span>';
+				h.append(b.t);
+				const src = document.createElement('p');
+				src.className = 'src';
+				const ranges = SEGS.filter((g) => g.b === i).map((g) => fmt(g.s) + '–' + fmt(g.e));
+				src.append('From ', outLink(watchUrl(b.v), VIDEOS[b.v].t), ' · ' + when(VIDEOS[b.v].d) + ' · ' + Math.round(b.d / 60) + ' min: ' + ranges.join(', ') + ' of the video');
+				const sum = document.createElement('p');
+				sum.textContent = b.sum;
 				const ol = document.createElement('ol');
-				ol.className = 'clips';
-				CLIPS.forEach((c, i) => {
-					if (c.p !== p) return;
+				ol.className = 'chs';
+				CHAPTERS.forEach((c, j) => {
+					if (c.b !== i) return;
 					const li = document.createElement('li');
-					const b = document.createElement('button');
-					b.type = 'button';
-					b.className = 'clip' + (seen.has(c.id) ? ' seen' : '');
-					b.innerHTML = '<span class="n"></span><span class="t"></span><span class="d"></span><span class="x"></span>';
-					b.querySelector('.n').textContent = String(i + 1).padStart(2, '0');
-					b.querySelector('.t').textContent = c.t;
-					b.querySelector('.d').textContent = fmt(dur(c));
-					b.querySelector('.x').textContent = c.n;
-					b.addEventListener('click', () => play(i, true));
-					li.append(b);
+					const btn = document.createElement('button');
+					btn.type = 'button';
+					btn.className = 'ch';
+					btn.innerHTML = '<span class="at"></span><span class="t"></span><span class="x"></span>';
+					btn.querySelector('.at').textContent = fmt(c.gt);
+					btn.querySelector('.t').textContent = c.t;
+					btn.querySelector('.x').textContent = c.n + ' (' + fmt(c.at) + ' in the video)';
+					btn.addEventListener('click', () => {
+						seekGlobal(c.gt, true);
+						$('stage').scrollIntoView({ behavior: 'smooth', block: 'start' });
+					});
+					li.append(btn);
 					ol.append(li);
-					rows[i] = b;
+					chEls[j] = btn;
 				});
-				sec.append(h, blurb, ol);
+				sec.append(h, src, sum, ol);
 				$('parts').append(sec);
 			});
 			Object.entries(VIDEOS).forEach(([v, info]) => {
-				const n = CLIPS.filter((c) => c.v === v).length;
 				const li = document.createElement('li');
-				const a = document.createElement('a');
-				a.href = watchUrl(v);
-				a.className = 'out';
-				a.target = '_blank';
-				a.rel = 'noopener';
-				a.textContent = info.t;
-				li.append(a, ', ' + when(info.d) + ' · ' + n + (n === 1 ? ' clip' : ' clips'));
+				li.append(outLink(watchUrl(v), info.t), ', ' + when(info.d));
 				$('sources').append(li);
 			});
 
-			function show(i) {
-				cur = i;
-				const c = CLIPS[i];
-				const info = VIDEOS[c.v];
-				$('now-label').textContent = 'Part ' + (c.p + 1) + ' · ' + PARTS[c.p].t + ' · clip ' + (i + 1) + ' of ' + CLIPS.length;
-				$('now-title').textContent = c.t;
-				$('now-note').textContent = c.n;
-				const src = $('now-source');
-				src.textContent = 'From ';
-				const a = document.createElement('a');
-				a.href = watchUrl(c.v, c.s);
-				a.className = 'out';
-				a.target = '_blank';
-				a.rel = 'noopener';
-				a.textContent = info.t;
-				src.append(a, ', ' + when(info.d) + ', at ' + fmt(c.s));
-				rows.forEach((r, j) => r.classList.toggle('on', j === i));
-				$('prev').disabled = i === 0;
-				$('next').disabled = i === CLIPS.length - 1;
-				$('restart').hidden = i === 0;
-				progress(c.s);
-				store.write({ i, seen: [...seen] });
+			// What's playing, under the player
+			let shownChapter = -1;
+			function render() {
+				BLOCKS.forEach((b, i) => {
+					blkEls[i].fill.style.width = (100 * clamp((pos - b.g) / b.d, 0, 1)).toFixed(3) + '%';
+				});
+				if (!dragging) placeKnob(pos);
+				$('time').textContent = fmt(pos) + ' / ' + fmt(TOTAL);
+				const tr = $('track');
+				tr.setAttribute('aria-valuemax', String(Math.round(TOTAL)));
+				tr.setAttribute('aria-valuenow', String(Math.round(pos)));
+				tr.setAttribute('aria-valuetext', fmt(pos) + ' of ' + fmt(TOTAL));
+				const c = chapterAt(pos);
+				if (c !== shownChapter) {
+					shownChapter = c;
+					const ch = CHAPTERS[c];
+					const b = BLOCKS[ch.b];
+					$('now-part').textContent = 'Part ' + (ch.b + 1) + ' of ' + BLOCKS.length + ' · ' + b.t;
+					$('now-title').textContent = ch.t;
+					$('now-note').textContent = ch.n;
+					const src = $('now-src');
+					src.textContent = 'From ';
+					src.append(outLink(watchUrl(ch.v, ch.at), VIDEOS[ch.v].t), ', ' + when(VIDEOS[ch.v].d) + ', at ' + fmt(ch.at) + ' in the video');
+					chEls.forEach((el, j) => el.classList.toggle('on', j === c));
+				}
 			}
-
-			function progress(t) {
-				const c = CLIPS[cur];
-				const done = BEFORE[cur] + Math.min(Math.max(t - c.s, 0), dur(c));
-				$('bar').style.width = ((100 * done) / TOTAL).toFixed(2) + '%';
-				$('time').textContent = fmt(done) + ' of ' + fmt(TOTAL);
+			function placeKnob(x) {
+				const L = locate(x);
+				const b = SEGS[L.k].b;
+				const tr = $('track').getBoundingClientRect();
+				const r = blkEls[b].el.getBoundingClientRect();
+				const f = clamp((x - BLOCKS[b].g) / BLOCKS[b].d, 0, 1);
+				$('knob').style.left = (r.left - tr.left + f * r.width).toFixed(1) + 'px';
 			}
-
-			function markSeen(i) {
-				seen.add(CLIPS[i].id);
-				rows[i].classList.add('seen');
-				store.write({ i: cur, seen: [...seen] });
+			function xFromPointer(clientX) {
+				for (let i = 0; i < blkEls.length; i++) {
+					const r = blkEls[i].el.getBoundingClientRect();
+					const nextLeft = i + 1 < blkEls.length ? blkEls[i + 1].el.getBoundingClientRect().left : Infinity;
+					if (clientX < nextLeft || i === blkEls.length - 1) {
+						const f = clamp((clientX - r.left) / r.width, 0, 1);
+						return BLOCKS[i].g + f * BLOCKS[i].d;
+					}
+				}
+				return 0;
 			}
 
 			// The YouTube player
 			let player = null;
 			let ready = false;
-			let loading = false; // a new clip was asked for and hasn't started yet
-			let wantPlay = false;
-			let firstStart = true;
+			let loadedV = null; // the video in the player
+			let k = locate(pos).k; // the piece being played
+			let pending = null; // a time we asked for and haven't reached yet
+			let carding = false;
+			let cardTimer = null;
 			let finished = false;
+			let wantStart = false;
+			let rate = 1;
+			let ccOn = false;
+			let lastRep = -1;
+			let lastWall = 0;
+			let lastSave = 0;
 
 			const tag = document.createElement('script');
 			tag.src = 'https://www.youtube.com/iframe_api';
 			document.head.append(tag);
 
 			window.onYouTubeIframeAPIReady = () => {
-				const c = CLIPS[cur];
+				const L = locate(pos);
+				k = L.k;
+				loadedV = SEGS[k].v;
 				player = new YT.Player('player', {
 					host: 'https://www.youtube-nocookie.com',
-					videoId: c.v,
-					playerVars: {
-						start: Math.floor(c.s),
-						end: Math.ceil(CLIPS[lastOfRun(cur)].e),
-						rel: 0,
-						playsinline: 1,
-						origin: location.origin,
-					},
+					videoId: loadedV,
+					playerVars: { start: Math.floor(L.t), controls: 0, disablekb: 1, fs: 0, rel: 0, playsinline: 1, iv_load_policy: 3, origin: location.origin },
 					events: {
 						onReady: () => {
 							ready = true;
-							if (wantPlay) play(cur);
+							if (wantStart) togglePlay();
 						},
 						onStateChange,
 						onError,
@@ -330,111 +450,315 @@
 				});
 			};
 
-			function play(i, scroll = false) {
-				if (i < 0 || i >= CLIPS.length) return;
-				finished = false;
-				$('alert').textContent = '';
-				show(i);
-				if (!ready) {
-					wantPlay = true;
+			const S = () => YT.PlayerState;
+			const isPlaying = () => ready && [S().PLAYING, S().BUFFERING].includes(player.getPlayerState());
+			// After a jump, keep playing if it was playing (or between two parts); stay paused if paused.
+			const keepGoing = () => isPlaying() || carding;
+
+			function seekGlobal(x, play) {
+				x = clamp(x, 0, TOTAL);
+				// Before the first play, moving around only shows where play will start.
+				if (!ready || (!play && !hasPlayed)) {
+					pos = x;
+					const L = locate(x);
+					k = L.k;
+					if (ready && loadedV !== SEGS[k].v) {
+						loadedV = SEGS[k].v;
+						player.cueVideoById({ videoId: loadedV, startSeconds: L.t });
+					}
+					render();
+					label();
 					return;
 				}
-				firstStart = false;
-				loading = true;
-				const c = CLIPS[i];
-				player.loadVideoById({ videoId: c.v, startSeconds: c.s, endSeconds: CLIPS[lastOfRun(i)].e });
-				if (scroll) document.querySelector('.screen').scrollIntoView({ behavior: 'smooth', block: 'start' });
+				finished = false;
+				hideCard();
+				const L = locate(x);
+				k = L.k;
+				pos = clamp(x, 0, TOTAL);
+				const g = SEGS[k];
+				pending = { t: L.t, since: performance.now() };
+				if (loadedV === g.v) {
+					player.seekTo(L.t, true);
+					if (play) player.playVideo();
+				} else {
+					loadedV = g.v;
+					if (play) player.loadVideoById({ videoId: g.v, startSeconds: L.t });
+					else player.cueVideoById({ videoId: g.v, startSeconds: L.t });
+				}
+				render();
+				label();
 			}
 
-			function playing() {
-				return ready && player.getPlayerState() === YT.PlayerState.PLAYING;
+			function next() {
+				const g = SEGS[k];
+				const n = SEGS[k + 1];
+				if (!n) return finish();
+				k++;
+				pos = n.g;
+				pending = { t: n.s, since: performance.now() };
+				if (n.v === g.v) {
+					player.seekTo(n.s, true); // the next piece of the same video: a jump, no reload
+				} else {
+					// A new video: a title card, then it starts.
+					loadedV = n.v;
+					player.cueVideoById({ videoId: n.v, startSeconds: n.s });
+					showCard(n.b);
+					cardTimer = setTimeout(() => {
+						hideCard();
+						player.playVideo();
+					}, 3500);
+				}
+				render();
+			}
+
+			function showCard(b, end) {
+				const B = BLOCKS[b];
+				$('card-part').textContent = end ? 'The end' : 'Part ' + (b + 1) + ' of ' + BLOCKS.length;
+				$('card-title').textContent = end ? 'Never enough' : B.t;
+				$('card-src').textContent = end ? 'Five videos by Dr. K, on HealthyGamerGG. They’re listed in full below.' : 'From “' + VIDEOS[B.v].t + '” · ' + when(VIDEOS[B.v].d);
+				$('card-go').textContent = end ? '↺ Watch again' : 'Play now';
+				$('card').hidden = false;
+				$('frame').style.visibility = 'hidden';
+				carding = true;
+			}
+			function hideCard() {
+				clearTimeout(cardTimer);
+				$('card').hidden = true;
+				$('frame').style.visibility = '';
+				carding = false;
+			}
+			function finish() {
+				player.pauseVideo();
+				finished = true;
+				pos = TOTAL;
+				render();
+				showCard(BLOCKS.length - 1, true);
+				store.write({ pos: 0 });
+				label();
+			}
+
+			function togglePlay() {
+				if (!ready) {
+					wantStart = true;
+					$('play').textContent = '… Loading';
+					return;
+				}
+				if (finished) return seekGlobal(0, true);
+				if (carding) {
+					hideCard();
+					player.playVideo();
+					return;
+				}
+				if (isPlaying()) return player.pauseVideo();
+				const g = SEGS[k];
+				if (loadedV !== g.v) return seekGlobal(pos, true);
+				const st = player.getPlayerState();
+				if (st === S().CUED || st === S().UNSTARTED || st === S().ENDED) {
+					const t = g.s + (pos - g.g);
+					pending = { t, since: performance.now() };
+					player.seekTo(t, true);
+				}
+				player.playVideo();
+			}
+
+			function label() {
+				let text = '▶ Play';
+				if (finished) text = '↺ Watch again';
+				else if (isPlaying()) text = '❚❚ Pause';
+				else if (pos > 3 && !hasPlayed) text = (resuming && pos === startPos ? '▶ Continue at ' : '▶ Play from ') + fmt(pos);
+				$('play').textContent = text;
 			}
 
 			function onStateChange(ev) {
-				const S = YT.PlayerState;
-				$('go').textContent = finished ? '↺ Watch again' : ev.data === S.PLAYING || ev.data === S.BUFFERING ? '❚❚ Pause' : '▶ Play';
-				if (ev.data === S.PLAYING) {
-					const c = CLIPS[cur];
-					const t = player.getCurrentTime();
-					// Started from YouTube's own play button: begin exactly where the clip begins.
-					if (firstStart) {
-						firstStart = false;
-						if (Math.abs(t - c.s) > 0.4) player.seekTo(c.s, true);
-					}
+				if (ev.data === S().PLAYING) {
+					hasPlayed = true;
+					if (carding) hideCard();
+					if (player.getPlaybackRate() !== rate) player.setPlaybackRate(rate);
+					if (ccOn) captions(true);
 				}
-				if (ev.data === S.ENDED && !loading) {
-					// The player stopped at the end of the clip (or of clips joined to it): go on.
-					const last = lastOfRun(cur);
-					markSeen(cur);
-					if (last !== cur) markSeen(last);
-					if (last + 1 < CLIPS.length) play(last + 1);
-					else finish();
-				}
+				if (ev.data === S().ENDED && !carding && !finished) next();
+				label();
 			}
 
 			function onError() {
-				$('alert').textContent = "This clip won't play here. Skipping to the next one; the link above opens it on YouTube.";
-				loading = false;
+				$('alert').textContent = 'This part won’t play here. Skipping to the next part; the list below links to the video on YouTube.';
 				setTimeout(() => {
-					if (cur + 1 < CLIPS.length) play(cur + 1);
-				}, 3000);
+					$('alert').textContent = '';
+					const b = SEGS[k].b;
+					if (b + 1 < BLOCKS.length) seekGlobal(BLOCKS[b + 1].g, true);
+				}, 3500);
 			}
 
-			function finish() {
-				$('now-label').textContent = 'The end · ' + CLIPS.length + ' clips';
-				$('time').textContent = fmt(TOTAL) + ' of ' + fmt(TOTAL);
-				$('bar').style.width = '100%';
-				finished = true;
-				$('go').textContent = '↺ Watch again';
-			}
-
-			// Ten times a second: move the progress, and go on to the next clip at the end of this one.
+			// Twenty times a second: follow the player, and move on at the end of each piece.
 			setInterval(() => {
-				if (!playing()) return;
-				const c = CLIPS[cur];
+				if (!ready || carding) return;
 				const data = player.getVideoData ? player.getVideoData() : null;
-				if (!data || data.video_id !== c.v) return;
-				const t = player.getCurrentTime();
-				if (loading) {
-					if (t >= c.s - 1.5 && t < c.e) loading = false;
+				if (!data || data.video_id !== SEGS[k].v) return;
+				const playing = player.getPlayerState() === S().PLAYING;
+				let t = player.getCurrentTime();
+				const now = performance.now();
+				if (t !== lastRep) {
+					lastRep = t;
+					lastWall = now;
+				} else if (playing) {
+					t = lastRep + Math.min(0.5, ((now - lastWall) / 1000) * rate);
+				}
+				if (pending) {
+					if (Math.abs(t - pending.t) < 1.5 || now - pending.since > 60000) pending = null;
 					else return;
 				}
-				progress(t);
-				if (t >= c.e - 0.05 && t < c.e + 20) {
-					markSeen(cur);
-					const next = CLIPS[cur + 1];
-					if (joined(c, next)) show(cur + 1);
-					else if (next) play(cur + 1);
-					else {
-						player.pauseVideo();
-						finish();
-					}
-				}
-			}, 100);
-
-			$('go').addEventListener('click', () => {
-				if (!ready) {
-					wantPlay = true;
-					$('go').textContent = '… Loading';
+				const g = SEGS[k];
+				if (playing && t > 0.5 && t < g.s - 1) {
+					pending = { t: g.s, since: now };
+					player.seekTo(g.s, true);
 					return;
 				}
-				if (finished) return play(0);
-				const S = YT.PlayerState;
-				const st = player.getPlayerState();
-				if (st === S.PLAYING || st === S.BUFFERING) player.pauseVideo();
-				else if (st === S.PAUSED) player.playVideo();
-				else play(cur);
+				if (playing && t >= g.e - 0.06) return next();
+				pos = g.g + clamp(t - g.s, 0, g.d);
+				render();
+				if (playing && now - lastSave > 2000) {
+					lastSave = now;
+					store.write({ pos });
+				}
+			}, 50);
+
+			// The bar: click or drag anywhere in the 45 minutes
+			let dragging = false;
+			let dragX = 0;
+			const track = $('track');
+			track.addEventListener('pointerdown', (e) => {
+				dragging = true;
+				track.classList.add('drag');
+				track.setPointerCapture(e.pointerId);
+				dragX = xFromPointer(e.clientX);
+				placeKnob(dragX);
+				showTip(e.clientX, dragX);
 			});
-			$('prev').addEventListener('click', () => play(cur - 1));
-			$('next').addEventListener('click', () => play(cur + 1));
-			$('restart').addEventListener('click', () => {
-				seen.clear();
-				rows.forEach((r) => r.classList.remove('seen'));
-				play(0);
+			track.addEventListener('pointermove', (e) => {
+				const x = xFromPointer(e.clientX);
+				if (dragging) {
+					dragX = x;
+					placeKnob(x);
+					$('time').textContent = fmt(x) + ' / ' + fmt(TOTAL);
+				}
+				if (e.pointerType === 'mouse' || dragging) showTip(e.clientX, x);
+			});
+			const endDrag = (e) => {
+				if (!dragging) return;
+				dragging = false;
+				track.classList.remove('drag');
+				$('tip').hidden = true;
+				seekGlobal(dragX, keepGoing());
+			};
+			track.addEventListener('pointerup', endDrag);
+			track.addEventListener('pointercancel', endDrag);
+			track.addEventListener('pointerleave', () => {
+				if (!dragging) $('tip').hidden = true;
+			});
+			function showTip(clientX, x) {
+				const tip = $('tip');
+				const tr = track.getBoundingClientRect();
+				tip.textContent = fmt(x) + ' · ' + CHAPTERS[chapterAt(x)].t;
+				tip.hidden = false;
+				const half = tip.offsetWidth / 2;
+				tip.style.left = clamp(clientX - tr.left, half, tr.width - half) + 'px';
+			}
+			track.addEventListener('keydown', (e) => {
+				const step = { ArrowLeft: -10, ArrowRight: 10, PageDown: -60, PageUp: 60 }[e.key];
+				if (step) {
+					e.preventDefault();
+					e.stopPropagation();
+					seekGlobal(pos + step, keepGoing());
+				} else if (e.key === 'Home' || e.key === 'End') {
+					e.preventDefault();
+					seekGlobal(e.key === 'Home' ? 0 : TOTAL - 1, keepGoing());
+				}
 			});
 
-			show(cur);
-			if (resuming) $('go').textContent = '▶ Continue';
+			// The buttons
+			$('play').addEventListener('click', togglePlay);
+			$('card-go').addEventListener('click', togglePlay);
+			$('back').addEventListener('click', () => seekGlobal(pos - 10, keepGoing()));
+			$('fwd').addEventListener('click', () => seekGlobal(pos + 10, keepGoing()));
+			$('speed').addEventListener('change', (e) => {
+				rate = Number(e.target.value);
+				if (ready) player.setPlaybackRate(rate);
+			});
+			function captions(on) {
+				if (!ready) return;
+				try {
+					if (on) {
+						player.loadModule('captions');
+						player.setOption('captions', 'track', { languageCode: 'en' });
+					} else {
+						player.unloadModule('captions');
+					}
+				} catch (e) {}
+			}
+			$('cc').addEventListener('click', () => {
+				ccOn = !ccOn;
+				$('cc').setAttribute('aria-pressed', String(ccOn));
+				captions(ccOn);
+			});
+			const stage = $('stage');
+			const nativeFs = !!(stage.requestFullscreen && document.fullscreenEnabled);
+			// Where the browser refuses full screen (an iPhone, some embedded browsers), the player fills the window instead.
+			function setPseudo(on) {
+				stage.classList.toggle('pseudo', on);
+				document.body.style.overflow = on ? 'hidden' : '';
+				requestAnimationFrame(() => placeKnob(dragging ? dragX : pos));
+			}
+			function toggleFs() {
+				if (stage.classList.contains('pseudo')) return setPseudo(false);
+				if (document.fullscreenElement) return document.exitFullscreen();
+				if (!nativeFs) return setPseudo(true);
+				// Some browsers neither grant nor refuse: after a moment, fill the window instead.
+				let settled = false;
+				stage.requestFullscreen().then(
+					() => (settled = true),
+					() => {
+						settled = true;
+						setPseudo(true);
+					},
+				);
+				setTimeout(() => {
+					if (!settled && !document.fullscreenElement) setPseudo(true);
+				}, 1200);
+			}
+			$('fs').addEventListener('click', toggleFs);
+			document.addEventListener('fullscreenchange', () => {
+				if (document.fullscreenElement && stage.classList.contains('pseudo')) setPseudo(false);
+				requestAnimationFrame(() => placeKnob(dragging ? dragX : pos));
+			});
+			window.addEventListener('resize', () => placeKnob(dragging ? dragX : pos));
+			document.addEventListener('keydown', (e) => {
+				if (e.target.closest && e.target.closest('select, input, textarea, .track')) return;
+				if (e.metaKey || e.ctrlKey || e.altKey) return;
+				const key = e.key.toLowerCase();
+				if (key === ' ' || key === 'k') {
+					if (e.target.closest && e.target.closest('button') && key === ' ') return; // a focused button already reacts to space
+					e.preventDefault();
+					togglePlay();
+				} else if (key === 'arrowleft' || key === 'j') {
+					e.preventDefault();
+					seekGlobal(pos - 10, keepGoing());
+				} else if (key === 'arrowright' || key === 'l') {
+					e.preventDefault();
+					seekGlobal(pos + 10, keepGoing());
+				} else if (key === 'f') {
+					toggleFs();
+				} else if (key === 'c') {
+					$('cc').click();
+				} else if (key === 'escape' && stage.classList.contains('pseudo')) {
+					toggleFs();
+				}
+			});
+			window.addEventListener('pagehide', () => {
+				if (!finished) store.write({ pos });
+			});
+
+			render();
+			label();
 		</script>
 	</body>
 </html>
