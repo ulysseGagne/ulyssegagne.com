@@ -72,6 +72,14 @@
 			.conversation aside[data-callout='ulysse'] { width: fit-content; max-width: 85%; margin-left: auto; background: var(--wash); border-radius: 18px; padding: 9px 16px 11px; }
 			.conversation aside[data-callout='scene'] > .callout-title { text-align: center; font-size: 13px; margin: 2em 0; }
 			.conversation h2 { font-size: 1.318em; margin-top: 2.2em; }
+			/* Short notes posted while working, and questions asked outside a message: small, gray, one after another */
+			.conversation aside[data-callout='step'], .conversation aside[data-callout='ask'] { margin: 0 0 6px; padding-left: 12px; border-left: 2px solid var(--line); }
+			.conversation aside[data-callout='step'] > p, .conversation aside[data-callout='ask'] > p { font-size: 14px; color: var(--muted); margin: 0; }
+			.conversation aside[data-callout='step'] > .callout-title { font-size: 12px; margin: 0 0 2px; }
+			.conversation aside[data-callout='step'] + aside[data-callout='claude'] { margin-top: 1.25em; }
+			.conversation aside[data-callout='claude'] + aside[data-callout='ask'] { margin-top: -0.4em; margin-bottom: 1.5em; }
+			.conversation aside[data-callout='ask'] strong { color: var(--text); }
+			.conversation aside.callout ol, .conversation aside.callout ul { margin-bottom: 1em; }
 			@media (max-width: 520px) {
 				.conversation aside[data-callout='ulysse'] { max-width: 92%; }
 			}

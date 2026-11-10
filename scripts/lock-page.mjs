@@ -7,7 +7,8 @@
 //   node scripts/lock-page.mjs <source.md> <page.html>
 //
 // The source: Markdown with properties on top (title, description, path, lead, hint), and Obsidian callouts for
-// a conversation, as on /tuteur: > [!ulysse] Ulysse, > [!claude] Claude, > [!scene] a date. Comments <!-- … --> stay out.
+// a conversation, as on /tuteur: > [!ulysse] Ulysse, > [!claude] Claude, > [!scene] a date; > [!step] for a short note
+// posted while working, > [!ask] for a question asked outside a message (both small and gray). Comments <!-- … --> stay out.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -58,7 +59,8 @@ function callouts() {
 			text.value = text.value.slice(m[0].length);
 			const rest = first.children.filter((c) => !(c === text && !c.value));
 			node.children = [
-				{ type: 'paragraph', data: { hProperties: { className: ['callout-title'] } }, children: [{ type: 'text', value: m[2] }] },
+				// > [!step] alone on its line: no title, only its text
+				...(m[2] ? [{ type: 'paragraph', data: { hProperties: { className: ['callout-title'] } }, children: [{ type: 'text', value: m[2] }] }] : []),
 				...(rest.length ? [{ type: 'paragraph', children: rest }] : []),
 				...node.children.slice(1),
 			];
