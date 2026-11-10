@@ -6,4 +6,4 @@ description: Qui est Ulysse Gagné, avec son CV, et le tuteur socratique qu'Ulys
 Ce site a deux parties :
 
 - **[[a-propos|À propos]]** : qui est Ulysse Gagné, avec son CV.
-- **[[demo|Le tuteur socratique]]** : le tuteur qu'Ulysse a bâti pour étudier avec l'IA.
+- **[[tuteur|Le tuteur socratique]]** : le tuteur qu'Ulysse a bâti pour étudier avec l'IA.

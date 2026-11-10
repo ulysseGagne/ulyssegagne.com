@@ -411,7 +411,7 @@ p:has(> img + img) > em:last-child {
 	}
 }
 
-/* The tutor's demo (site/tuteur/demo.md, `conversation: true`): a conversation in Claude Code's look, its comments
+/* The tutor's demo (site/tuteur.md, `conversation: true`): a conversation in Claude Code's look, its comments
    beside it as in Google Docs (public/conversation.js). The student writes in a bubble on the right; the tutor
    answers in plain text; the words a comment is about are highlighted in yellow, and hovering either lights both. */
 

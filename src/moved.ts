@@ -3,4 +3,6 @@
 export const moved: Record<string, string> = {
 	'/course': '/a-propos/course',
 	'/projets/hide-and-stalk': '/a-propos/hide-and-stalk',
+	// On Nov 10, 2026, the tutor's demo became the tutor's page itself.
+	'/tuteur/demo': '/tuteur',
 };

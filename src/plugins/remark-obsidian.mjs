@@ -4,7 +4,7 @@
 // [[tuteur|text]] shows the text; ![[photo.jpg]] is an image found the same way.
 // A note for the editor, <!-- like this -->, stays out of the page, as in Obsidian's reading view.
 // A comment, as in CriticMarkup: {==the words==}{>>what is said about them<<} highlights the words and puts
-// the comment beside them, in the margin on a wide screen (the tutor's demo: site/tuteur/demo.md).
+// the comment beside them, in the margin on a wide screen (the tutor's demo: site/tuteur.md).
 
 import fs from 'node:fs';
 import path from 'node:path';

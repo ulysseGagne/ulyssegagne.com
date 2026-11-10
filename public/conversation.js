@@ -1,4 +1,4 @@
-// The tutor's demo (site/tuteur/demo.md): each comment beside the words it is about, as in Google Docs.
+// The tutor's demo (site/tuteur.md): each comment beside the words it is about, as in Google Docs.
 // On a wide screen, a comment sits in the margin at the height of its words, pushed down only when the one above
 // takes the room; on a narrow one, it follows its message. Hovering the words or the comment lights both.
 (() => {
