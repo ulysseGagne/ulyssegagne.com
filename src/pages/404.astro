@@ -17,10 +17,15 @@ const pages = (await getCollection('pages', (page) => !page.data.noindex))
 		// and a page that moved is at its new address (ulyssegagne.com/course is /a-propos/course: src/moved.ts).
 		// The head hides the page and leaves before anything shows. The new address starts with one slash and keeps this origin:
 		// ulyssegagne.com//example.com/ must not leave the site.
+		// A page's key is matched decoded, its accents in one form, in lowercase: /f%C3%A9lix and /Nora find /félix and /nora.
 		{
 			const { pathname, search, hash, origin } = location;
 			const path = '/' + pathname.replace(/^\/+|\/+$/g, '');
-			const to = moved[path] ?? (path === pathname ? null : path);
+			let key = path;
+			try {
+				key = decodeURIComponent(path).normalize('NFC').toLowerCase();
+			} catch {}
+			const to = moved[key] ?? (path === pathname ? null : path);
 			if (to) {
 				document.documentElement.style.display = 'none';
 				location.replace(origin + to + search + hash);
