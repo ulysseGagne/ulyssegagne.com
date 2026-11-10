@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>The study system · Ulysse Gagné</title>
+		<meta name="description" content="A Socratic tutor for your own courses, in Claude Code: paste one message, and your Claude guides you to your first lesson." />
+		<meta name="robots" content="noindex" />
+		<link rel="icon" href="/favicon.ico" sizes="32x32" />
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="Ulysse Gagné" />
+		<meta property="og:locale" content="en_CA" />
+		<meta property="og:title" content="The study system" />
+		<meta property="og:description" content="A Socratic tutor for your own courses, in Claude Code: paste one message, and your Claude guides you to your first lesson." />
+		<style>
+			/* The site's design system (src/styles/global.css): a calm document in black and white.
+			   A page shared by link only, like never-enough.html: linked from no page, hidden from search engines. */
+			:root {
+				--bg: #ffffff;
+				--text: #222222;
+				--muted: #5c5c5c;
+				--line: #e0e0e0;
+				--wash: #f5f5f5;
+				--accent: #0066cc;
+				--font: ui-sans-serif, -apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI', Roboto, sans-serif;
+				--mono: ui-monospace, SFMono-Regular, 'Cascadia Mono', 'Roboto Mono', Menlo, Consolas, monospace;
+				--measure: 700px;
+				--radius: 4px;
+				color-scheme: light;
+			}
+			*, *::before, *::after { box-sizing: border-box; }
+			body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font); font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+			::selection { background: rgba(0, 102, 204, 0.22); }
+			:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+			a { color: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+			a:hover { color: var(--accent); }
+			button { font: inherit; color: inherit; cursor: pointer; }
+
+			.path { max-width: var(--measure); margin: 0 auto; padding: 1.25rem 1rem 0; font-size: 13px; color: var(--muted); }
+			.path a { color: inherit; text-decoration: none; }
+			.path a:hover { color: var(--accent); }
+			.path .sep { margin: 0 0.4em; }
+			.path .here { color: var(--text); }
+			main { max-width: var(--measure); margin: 0 auto; padding: 2.5rem 1rem 6rem; }
+			h1 { font-size: 1.618em; font-weight: 700; line-height: 1.2; margin: 0 0 0.5em; }
+			p { margin: 0 0 1em; }
+
+			/* The message to paste, with its copy button */
+			.prompt { position: relative; margin: 0 0 1em; }
+			.prompt pre { margin: 0; background: var(--wash); border-radius: var(--radius); padding: 14px 16px 14px 16px; white-space: pre-wrap; overflow-wrap: anywhere; }
+			.prompt code { font-family: var(--mono); font-size: 0.875em; }
+			.copy { display: block; margin: 8px 0 0 auto; background: var(--text); color: var(--bg); border: 1px solid var(--text); border-radius: var(--radius); padding: 5px 14px; font-size: 15px; line-height: 1.4; }
+			.copy:hover { opacity: 0.85; }
+
+			@media (max-width: 520px) {
+				main { padding-top: 1.75rem; }
+			}
+		</style>
+	</head>
+	<body>
+		<nav class="path" aria-label="Path"><a href="/">ulyssegagne.com</a><span class="sep">/</span><span class="here">study-system</span></nav>
+		<main>
+			<h1>The study system</h1>
+			<p>This tutor teaches you your own courses, one slide at a time, then has you do the exercises, without ever giving you the answer before you try. You find it yourself, so you remember it.</p>
+			<p>On your Mac, open the Claude app, go to the Code tab, pick a folder (Documents, for example), and paste this message:</p>
+			<div class="prompt">
+				<pre><code id="prompt">Clone https://github.com/ulysseGagne/study-system into this folder, then read study-system/CLAUDE.md and follow it. It's my first time: guide me one step at a time.</code></pre>
+				<button class="copy" type="button" id="copy">Copy</button>
+			</div>
+			<p>Your Claude takes it from there, one small step at a time, up to your first lesson. When it asks permission to run a command, you can accept.</p>
+			<p>To see what a session looks like: <a href="/tuteur/demo">the tutor demo</a>, in French, <strong>a work in progress</strong>.</p>
+		</main>
+		<script>
+			const button = document.getElementById('copy');
+			button.addEventListener('click', async () => {
+				const text = document.getElementById('prompt').textContent;
+				try {
+					await navigator.clipboard.writeText(text);
+				} catch {
+					const range = document.createRange();
+					range.selectNodeContents(document.getElementById('prompt'));
+					const selection = getSelection();
+					selection.removeAllRanges();
+					selection.addRange(range);
+					document.execCommand('copy');
+				}
+				button.textContent = 'Copied';
+				setTimeout(() => (button.textContent = 'Copy'), 2000);
+			});
+		</script>
+	</body>
+</html>
