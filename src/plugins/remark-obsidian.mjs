@@ -3,6 +3,8 @@
 // Links as in Documents: [[tuteur]] is the page named tuteur.md anywhere in site/, shown with its title;
 // [[tuteur|text]] shows the text; ![[photo.jpg]] is an image found the same way.
 // A note for the editor, <!-- like this -->, stays out of the page, as in Obsidian's reading view.
+// A comment, as in CriticMarkup: {==the words==}{>>what is said about them<<} highlights the words and puts
+// the comment beside them, in the margin on a wide screen (the tutor's demo: site/tuteur/demo.md).
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -13,15 +15,17 @@ const HIGHLIGHT = /==([^=\n]+)==/g;
 const COMMENT = /^\s*<!--[\s\S]*?-->\s*$/;
 const WIKILINK = /(!?)\[\[([^\]|]+?)(?:\|([^\]]*))?\]\]/g;
 const IMAGE = /\.(png|jpe?g|gif|webp|avif|svg)$/i;
+const CRITIC = /\{==([\s\S]+?)==\}\{>>([\s\S]+?)<<\}/g;
 
 export default function remarkObsidian() {
-	return (tree, file) => visit(tree, { ...siteFiles(), from: file.path });
+	return (tree, file) => visit(tree, { ...siteFiles(), from: file.path, comments: 0 });
 }
 
 function visit(node, site) {
 	if (!node.children) return;
-	node.children = node.children
+	node.children = mergeText(node.children)
 		.filter((child) => !(child.type === 'html' && COMMENT.test(child.value)))
+		.flatMap((child) => splitComments(child, site))
 		.flatMap((child) => splitWikilinks(child, site))
 		.flatMap(splitHighlights);
 	for (const child of node.children) visit(child, site);
@@ -80,6 +84,40 @@ function splitWikilinks(node, site) {
 	return parts;
 }
 
+// Text the parser left in pieces (around an escaped character) is one text again, so a comment is found whole.
+function mergeText(children) {
+	const out = [];
+	for (const child of children) {
+		const last = out[out.length - 1];
+		if (child.type === 'text' && last?.type === 'text') last.value += child.value;
+		else out.push(child.type === 'text' ? { ...child } : child);
+	}
+	return out;
+}
+
+function splitComments(node, site) {
+	if (node.type !== 'text' || !node.value.includes('{==')) return [node];
+	const parts = [];
+	let last = 0;
+	for (const match of node.value.matchAll(CRITIC)) {
+		const id = String(++site.comments);
+		if (match.index > last) parts.push({ type: 'text', value: node.value.slice(last, match.index) });
+		parts.push({
+			type: 'commentAnchor',
+			data: { hName: 'mark', hProperties: { className: ['c-anchor'], dataC: id, tabIndex: 0 } },
+			children: [{ type: 'text', value: match[1] }],
+		});
+		parts.push({
+			type: 'commentNote',
+			data: { hName: 'span', hProperties: { className: ['c-note'], dataC: id, role: 'note' } },
+			children: [{ type: 'text', value: match[2] }],
+		});
+		last = match.index + match[0].length;
+	}
+	if (last < node.value.length) parts.push({ type: 'text', value: node.value.slice(last) });
+	return parts;
+}
+
 function splitHighlights(node) {
 	if (node.type !== 'text' || !node.value.includes('==')) return [node];
 	const parts = [];
@@ -133,5 +171,5 @@ function toCallout(quote) {
 	quote.children = [heading, ...text, ...quote.children.slice(1)];
 	quote.data = isFold
 		? { hName: 'details', hProperties: { className: ['fold'], open: fold === '+' } }
-		: { hName: 'aside', hProperties: { className: ['callout'] } };
+		: { hName: 'aside', hProperties: { className: ['callout'], dataCallout: type.toLowerCase() } };
 }

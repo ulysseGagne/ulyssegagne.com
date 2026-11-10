@@ -16,7 +16,7 @@ export async function getStaticPaths() {
 
 const { page } = Astro.props;
 const { Content } = await render(page);
-const { title, description, noindex, photo, ...facts } = page.data;
+const { title, description, noindex, photo, conversation, ...facts } = page.data;
 
 // The photo is also the page's image when its link is shared: a square, as on the page.
 const share = photo && (await getImage({ src: photo, width: 1200, height: 1200, format: 'jpg', quality: 80 }));
@@ -60,5 +60,14 @@ function link(value: unknown) {
 			</dl>
 		)
 	}
-	<Content />
+	{
+		conversation ? (
+			<div class="conversation">
+				<Content />
+			</div>
+		) : (
+			<Content />
+		)
+	}
+	{conversation && <script is:inline src="/conversation.js" defer />}
 </Base>

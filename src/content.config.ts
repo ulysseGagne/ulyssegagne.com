@@ -12,6 +12,8 @@ const pages = defineCollection({
 			title: z.string(),
 			description: z.string().optional(),
 			noindex: z.boolean().optional(),
+			// A conversation: callouts as messages, comments in the margin (site/tuteur/demo.md).
+			conversation: z.boolean().optional(),
 			photo: image().optional(),
 		}),
 });

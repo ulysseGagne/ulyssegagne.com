@@ -410,3 +410,203 @@ p:has(> img + img) > em:last-child {
 		transition: none;
 	}
 }
+
+/* The tutor's demo (site/tuteur/demo.md, `conversation: true`): a conversation in Claude Code's look, its comments
+   beside it as in Google Docs (public/conversation.js). The student writes in a bubble on the right; the tutor
+   answers in plain text; the words a comment is about are highlighted in yellow, and hovering either lights both. */
+
+.conversation {
+	--bubble: var(--wash);
+	--note-line: #dadce0;
+	--anchor: rgba(255, 208, 0, 0.3);
+	--anchor-on: rgba(255, 186, 0, 0.75);
+	position: relative;
+}
+
+@media (min-width: 1120px) {
+	body:has(.conversation) .path,
+	main:has(.conversation) {
+		max-width: calc(var(--measure) + 332px);
+	}
+
+	main:has(.conversation) > *,
+	.conversation {
+		max-width: calc(var(--measure) - 2rem);
+	}
+}
+
+.conversation aside.callout:where(:not([data-callout='warning'])) {
+	padding: 0;
+	background: none;
+	border-radius: 0;
+	margin: 0 0 1.25em;
+}
+
+.conversation aside.callout:where(:not([data-callout='warning'])) > .callout-title {
+	font-size: 12px;
+	font-weight: 500;
+	color: var(--muted);
+	margin: 0 0 3px;
+}
+
+.conversation aside[data-callout='ulysse'] {
+	width: fit-content;
+	max-width: 85%;
+	margin-left: auto;
+	background: var(--bubble);
+	border-radius: 18px;
+	padding: 9px 16px 11px;
+}
+
+.conversation aside[data-callout='scene'] > .callout-title {
+	text-align: center;
+	font-size: 13px;
+	margin: 2em 0;
+}
+
+.conversation aside[data-callout='video'] {
+	max-width: 480px;
+	background: #1f1f1f;
+	color: #ededed;
+	border-radius: 10px;
+	padding: 14px 18px;
+}
+
+.conversation aside[data-callout='video'] > .callout-title {
+	color: #ffffff;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.conversation aside[data-callout='diapo'] {
+	max-width: 480px;
+	margin: 1em 0 1.25em;
+	border: 1px solid var(--line);
+	border-radius: 8px;
+	overflow: hidden;
+}
+
+.conversation aside[data-callout='diapo'] > .callout-title {
+	margin: 0;
+	padding: 6px 12px;
+	background: var(--wash);
+	border-bottom: 1px solid var(--line);
+}
+
+.conversation aside[data-callout='diapo'] > p:not(.callout-title) {
+	margin: 0;
+	padding: 4px 22px 18px;
+	font-size: 15px;
+	color: var(--muted);
+}
+
+.conversation aside[data-callout='diapo'] > p:nth-child(2) {
+	padding-top: 18px;
+	font-size: 1.25em;
+	color: var(--text);
+}
+
+.conversation aside[data-callout='figure'] {
+	margin: 0.5em 0 1em;
+	padding-left: 12px;
+	border-left: 3px solid var(--line);
+	font-size: 15px;
+	color: var(--muted);
+}
+
+.conversation aside[data-callout='figure'] > .callout-title {
+	font-size: 13px;
+	color: var(--text);
+}
+
+.conversation aside[data-callout='ulysse'] code,
+.conversation aside[data-callout='ulysse'] pre {
+	background: var(--bg);
+}
+
+.conversation aside[data-callout='ulysse'] pre code {
+	background: none;
+}
+
+.conversation table {
+	border-collapse: collapse;
+	font-size: 14px;
+	margin: 0 0 1em;
+}
+
+.conversation th,
+.conversation td {
+	border: 1px solid var(--line);
+	padding: 4px 10px;
+	text-align: left;
+	vertical-align: top;
+}
+
+.conversation th {
+	background: var(--wash);
+	font-weight: 600;
+}
+
+.conversation mark.c-anchor {
+	background: var(--anchor);
+	border-radius: 2px;
+	transition: background 0.12s;
+}
+
+.conversation mark.c-anchor.on {
+	background: var(--anchor-on);
+}
+
+.conversation .c-note {
+	display: block;
+	margin: 6px 0;
+	padding: 9px 12px;
+	background: var(--bg);
+	border: 1px solid var(--note-line);
+	border-radius: 8px;
+	font-size: 13.5px;
+	font-weight: 400;
+	line-height: 1.45;
+	color: var(--text);
+	text-align: left;
+	transition: box-shadow 0.12s, transform 0.12s, border-color 0.12s;
+}
+
+.conversation .c-note.on {
+	border-color: transparent;
+	box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3), 0 2px 6px 2px rgba(60, 64, 67, 0.15);
+}
+
+.conversation .c-notes {
+	display: grid;
+	gap: 8px;
+	margin-top: 10px;
+}
+
+.conversation .c-notes .c-note {
+	margin: 0;
+}
+
+.conversation.wide .c-column {
+	position: absolute;
+	top: 0;
+	left: calc(100% + 32px);
+	width: 300px;
+}
+
+.conversation.wide .c-note {
+	position: absolute;
+	left: 0;
+	width: 100%;
+	margin: 0;
+}
+
+.conversation.wide .c-note.on {
+	transform: translateX(-8px);
+	z-index: 1;
+}
+
+/* On a narrow screen, a comment follows its message: a yellow edge ties it to its words. */
+.conversation .c-notes .c-note {
+	border-left: 3px solid var(--anchor-on);
+}
