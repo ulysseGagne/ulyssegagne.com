@@ -7,3 +7,5 @@ Ce site a deux parties :
 
 - **[[a-propos|À propos]]** : qui est Ulysse Gagné, avec son CV.
 - **[[tuteur|Le tuteur socratique]]** : le tuteur qu'Ulysse a bâti pour étudier avec l'IA.
+
+[Nora](/study-system) · [Felix](/never-enough)
