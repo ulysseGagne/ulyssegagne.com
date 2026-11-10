@@ -5,6 +5,8 @@ description: Le tuteur que j'ai bâti et avec lequel j'étudie chaque jour, dans
 
 J'ai bâti ce tuteur pour moi, et j'étudie avec lui depuis novembre 2025, dans presque tous mes cours. Il explique, je redis dans mes mots, il me montre ce qui cloche, et on recommence jusqu'à ce que ce soit juste.
 
+[[demo|La démo du tuteur]] : une séance type avec le tuteur, écrite à partir de vraies séances. **En chantier.**
+
 ## Expliquer dans mes mots
 
 Le tuteur me demande d'expliquer un programme ligne par ligne, à voix haute. C'est en parlant que je trouve ce que je n'avais pas compris.
