@@ -110,12 +110,24 @@ function splitComments(node, site) {
 		parts.push({
 			type: 'commentNote',
 			data: { hName: 'span', hProperties: { className: ['c-note'], dataC: id, role: 'note' } },
-			children: [{ type: 'text', value: match[2] }],
+			children: headline(match[2]),
 		});
 		last = match.index + match[0].length;
 	}
 	if (last < node.value.length) parts.push({ type: 'text', value: node.value.slice(last) });
 	return parts;
+}
+
+// A comment's headline, in bold, so the margin reads top to bottom: its first sentence, or what comes before
+// its first colon, whichever ends first (a « ? » inside guillemets doesn't end a sentence).
+function headline(text) {
+	const end = /[.!?](?=\s+[A-ZÀ-ÖØ-Ý«])|\s:\s/.exec(text);
+	if (!end) return [{ type: 'text', value: text }];
+	const cut = end[0].trim() === ':' ? end.index : end.index + 1;
+	return [
+		{ type: 'strong', children: [{ type: 'text', value: text.slice(0, cut) }] },
+		{ type: 'text', value: text.slice(cut) },
+	];
 }
 
 function splitHighlights(node) {

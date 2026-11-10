@@ -3,18 +3,16 @@ title: Le tuteur socratique
 description: J'ai bâti ce tuteur pour moi dans Claude Code, d'Anthropic, et j'étudie avec lui depuis novembre 2025, dans presque tous mes cours.
 noindex: true
 conversation: true
+statut: En chantier, un brouillon qui va changer
 ---
 
-> [!warning] En chantier
-> Un brouillon : la démo est en cours d'écriture, et elle va changer. Les passages surlignés en jaune ont un commentaire, à côté.
-
-J'ai bâti ce tuteur pour moi dans [Claude Code](https://claude.com/product/claude-code), d'Anthropic, et j'étudie avec lui depuis novembre 2025, dans presque tous mes cours. Il explique, je redis dans mes mots, il me montre ce qui cloche, et on recommence jusqu'à ce que ce soit juste. Voici une séance type, écrite à partir de vraies séances.
+J'ai bâti ce tuteur pour moi dans [Claude Code](https://claude.com/product/claude-code), d'Anthropic, et j'étudie avec lui depuis novembre 2025, dans presque tous mes cours. Il explique, je redis dans mes mots, il me montre ce qui cloche, et on recommence jusqu'à ce que ce soit juste. Voici une séance type, écrite à partir de vraies séances. Les passages surlignés en jaune ont un commentaire, dans la marge.
 
 ## 1. Chercher sans se perdre
 
 **Un mardi soir de septembre · Apprendre la matière**
 
-> [!ulysse] Ulysse · dicté
+> [!ulysse] Ulysse · message vocal
 > Salut. J'ai eu le cours sur la recherche dans un espace d'états cet après-midi, mais honnêtement, j'ai décroché vers la moitié. J'ai à peu près deux heures ce soir. On peut le reprendre depuis le début ?
 
 > [!claude] Claude
@@ -33,7 +31,7 @@ J'ai bâti ce tuteur pour moi dans [Claude Code](https://claude.com/product/clau
 > [!claude] Claude
 > Question rapide, d'après l'extrait : pour poser un problème de recherche, qu'est-ce qu'il te faut ?
 
-> [!ulysse] Ulysse · dicté
+> [!ulysse] Ulysse · message vocal
 > Euh… un état de départ, un état but… puis les opérateurs. Les actions qui te font passer d'un état à un autre.
 
 > [!claude] Claude
@@ -50,7 +48,7 @@ J'ai bâti ce tuteur pour moi dans [Claude Code](https://claude.com/product/clau
 >
 > À voix haute : pourquoi on ne peut pas juste essayer tous les états, un après l'autre ?
 
-> [!ulysse] Ulysse · dicté
+> [!ulysse] Ulysse · message vocal
 > Parce qu'il y en a trop. Ça prendrait genre une éternité.
 
 > [!claude] Claude
@@ -73,7 +71,7 @@ J'ai bâti ce tuteur pour moi dans [Claude Code](https://claude.com/product/clau
 >
 > À voix haute : sur l'arbre de la diapo, on a fermé A, puis B. Lequel est exploré juste après B ?
 
-> [!ulysse] Ulysse · dicté
+> [!ulysse] Ulysse · message vocal
 > {==D, je pense ?==}{>>Une réponse dite en une seconde, et déjà un malentendu visible. Sans la question, il serait passé inaperçu jusqu'à l'exercice.<<} C'est le premier enfant de B.
 
 > [!claude] Claude
@@ -95,7 +93,7 @@ J'ai bâti ce tuteur pour moi dans [Claude Code](https://claude.com/product/clau
 >
 > Avant l'exercice, une question pour fixer l'idée. La largeur d'abord trouve toujours le chemin qui a le moins d'actions. Qu'est-ce qu'elle paie pour ça ?
 
-> [!ulysse] Ulysse · dicté
+> [!ulysse] Ulysse · message vocal
 > Ben, elle explore tout, niveau par niveau. Fait que si le but est loin, ça fait vraiment beaucoup d'états avant d'y arriver.
 
 > [!claude] Claude
@@ -122,7 +120,7 @@ J'ai bâti ce tuteur pour moi dans [Claude Code](https://claude.com/product/clau
 > [!claude] Claude
 > ⚠️ Presque. Ligne 3 : E est déjà dans OUVERTS, arrivé par B. Ta trace l'ajoute une deuxième fois : {==E serait exploré deux fois==}{>>Le tuteur ne récite pas la règle : il dit ce que la trace entraînerait. Sur un grand graphe, les doublons font exploser la recherche, et c'est le piège classique des traces faites à la main.<<}, et tout ce qui vient après lui aussi.
 
-> [!ulysse] Ulysse · dicté
+> [!ulysse] Ulysse · message vocal
 > Ah oui. On l'ajoute pas s'il est déjà dedans. Je corrige.
 
 > [!ulysse] Ulysse · le tableau corrigé, dans la page du tableau
@@ -180,13 +178,13 @@ J'ai bâti ce tuteur pour moi dans [Claude Code](https://claude.com/product/clau
 > > [!figure] La carte
 > > routes S–A 2, S–B 4, A–C 3, A–D 4, C–E 2, E–G 3, B–G 7 ; dans les cercles, h : S 8, A 7, B 4, C 5, D 6, E 3, G 0.
 
-> [!ulysse] Ulysse · dicté
+> [!ulysse] Ulysse · message vocal
 > Ouf. Réécrire OUVERTS au complet à chaque tour, avec tous les f… c'est long, puis c'est juste des additions. Je sais comment ça marche. Tu peux le faire pour moi ?
 
 > [!claude] Claude
 > {==Oui, mais avec ta méthode==}{>>Le tuteur prend volontiers le travail répétitif, mais il fait d'abord expliquer la méthode. Sinon, il ferait l'exercice à la place de l'étudiant.<<}. Dis-moi en gros comment tu t'y prends : comment tu calcules f, quel état tu fermes à chaque tour, et quand tu t'arrêtes. Je ferai les calculs {==exactement comme tu me le dis==}{>>Le calcul passe au tuteur, la méthode reste à l'étudiant : c'est elle, la notion à apprendre. Et si elle a un défaut, le tableau va le montrer.<<}, et je remplirai le tableau.
 
-> [!ulysse] Ulysse · dicté
+> [!ulysse] Ulysse · message vocal
 > Ben, f, c'est g plus h. g, c'est le coût du chemin depuis S, t'additionnes les routes, puis h, c'est le chiffre dans le cercle. À chaque tour, je ferme celui qui a le plus petit f. Si je retrouve un état avec un g plus petit, je garde le plus petit. Puis j'arrête dès que G est dans OUVERTS.
 
 > [!claude] Claude
@@ -204,7 +202,7 @@ J'ai bâti ce tuteur pour moi dans [Claude Code](https://claude.com/product/clau
 >
 > ⚠️ Tout le reste de ta méthode est juste. Mais au tour 2, A attend encore dans OUVERTS, avec f = 9 : par A, il y a peut-être un chemin qui coûte moins que 11. En s'arrêtant là, ta méthode garde le premier chemin trouvé, pas le moins cher.
 
-> [!ulysse] Ulysse · dicté
+> [!ulysse] Ulysse · message vocal
 > Ah, OK. Faut qu'il soit fermé, pas juste dedans. Donc j'arrête quand c'est G que je ferme, quand c'est lui le plus petit.
 
 > [!claude] Claude
@@ -228,7 +226,7 @@ J'ai bâti ce tuteur pour moi dans [Claude Code](https://claude.com/product/clau
 >
 > Dernière question, à voix haute : pourquoi A* regarde g + h, et pas seulement h ?
 
-> [!ulysse] Ulysse · dicté
+> [!ulysse] Ulysse · message vocal
 > Parce que h, c'est juste ce qui reste. Si tu regardes juste ça, B a l'air proche, mais ça t'a déjà coûté cher pour te rendre là. g, c'est ce que t'as déjà payé.
 
 > [!claude] Claude
@@ -238,7 +236,7 @@ J'ai bâti ce tuteur pour moi dans [Claude Code](https://claude.com/product/clau
 
 **Trois semaines plus tard · Pratiquer les exercices**
 
-> [!ulysse] Ulysse · dicté
+> [!ulysse] Ulysse · message vocal
 > Salut. On fait les exercices de Prolog, sur la récursion.
 
 > [!claude] Claude
@@ -255,13 +253,13 @@ J'ai bâti ce tuteur pour moi dans [Claude Code](https://claude.com/product/clau
 >
 > Que répond Prolog à `?- ancetre(paul, lea).` ?
 
-> [!ulysse] Ulysse · dicté
+> [!ulysse] Ulysse · message vocal
 > Euh, OK, attends. Je comprends pas comment il sait quand s'arrêter. La deuxième règle appelle ancetre, qui rappelle ancetre… pourquoi ça boucle pas à l'infini ?
 
 > [!claude] Claude
 > C'est la bonne question : c'est le cœur de la récursion. On va la voir sur un exemple plus facile à suivre, {==ta famille==}{>>Avec des gens qu'on connaît, qui est le parent de qui va de soi. Il ne reste qu'une chose à suivre : la récursion.<<}. Donne-moi ton père, ton grand-père et ton arrière-grand-père, et je refais le même programme avec eux.
 
-> [!ulysse] Ulysse · dicté
+> [!ulysse] Ulysse · message vocal
 > Mon père, c'est Pierre. Son père, c'est Georges, puis le père de Georges, c'est Maxime. Si jamais t'en as besoin, ma mère, c'est Myrto, puis j'ai un frère, Raoul, puis une petite sœur, Indiana.
 
 > [!claude] Claude
@@ -280,7 +278,7 @@ J'ai bâti ce tuteur pour moi dans [Claude Code](https://claude.com/product/clau
 >
 > Pour voir où ça s'arrête, {==donne-moi la trace de l'algorithme==}{>>Le tuteur pourrait expliquer pourquoi ça s'arrête. Il fait plutôt dérouler la trace par l'étudiant : c'est en la disant qu'il va le voir.<<} pour `?- ancetre(maxime, ulysse).` : à chaque étape, la règle que Prolog essaie, puis ce qu'il cherche ensuite. Tu peux me la dire à voix haute.
 
-> [!ulysse] Ulysse · dicté
+> [!ulysse] Ulysse · message vocal
 > OK. Donc il essaie la règle un : est-ce que Maxime est le parent d'Ulysse ? Non, ça marche pas. Fait qu'il passe à la règle deux. Il faut que Maxime soit le parent de quelqu'un… ENFANT, c'est Georges. Puis là, il faut que Georges soit un ancêtre d'Ulysse, fait qu'il recommence avec Georges. Règle un : Georges, parent d'Ulysse ? Non. Règle deux : Georges, parent de Pierre, puis il recommence avec Pierre. Règle un : Pierre, parent d'Ulysse ? Oui ! Ah. {==Ah, OK. C'est là qu'il arrête==}{>>Le déclic vient de l'étudiant, pas du tuteur : en déroulant la trace à voix haute, il trouve seul la clause d'arrêt. Parler coûte moins qu'écrire, et tout le raisonnement est là pour le tuteur.<<}, quand la règle un marche. Chaque fois, il monte… ben, il descend d'une génération, jusqu'à tomber sur un parent direct.
 
 > [!claude] Claude
@@ -300,13 +298,13 @@ J'ai bâti ce tuteur pour moi dans [Claude Code](https://claude.com/product/clau
 > [!claude] Claude
 > ✅ true, par le même chemin que de Maxime jusqu'à toi. Dernière chose : en une phrase, dans tes mots, c'est quoi, un ancêtre, pour Prolog ?
 
-> [!ulysse] Ulysse · dicté
+> [!ulysse] Ulysse · message vocal
 > Ben, quelqu'un de plus vieux que toi dans ta famille.
 
 > [!claude] Claude
 > ⚠️ C'est le sens de tous les jours, mais Prolog ne connaît pas l'âge : nulle part le programme ne dit qui est plus vieux que qui. Il ne connaît que les faits parent.
 
-> [!ulysse] Ulysse · dicté
+> [!ulysse] Ulysse · message vocal
 > Ah. OK, donc c'est ton parent… ou le parent de ton parent… En fait, c'est ton parent, ou le parent de n'importe lequel de tes ancêtres.
 
 > [!claude] Claude
@@ -352,7 +350,7 @@ J'ai bâti ce tuteur pour moi dans [Claude Code](https://claude.com/product/clau
 > [!claude] Claude
 > « Oui. Et rien, dans ta troisième clause, n'empêche P d'être pierre. Pour Prolog, « passer par-dessus un pierre sans le compter » est donc une réponse permise : c'est elle qui donne les N en trop. »
 
-> [!ulysse] Ulysse · dicté
+> [!ulysse] Ulysse · message vocal
 > Ah, OK. Faut que je dise que P, c'est pas la même chose que E. Comme ça :
 > ```prolog
 > compte([P|R], E, N) :- P \= E, compte(R, E, N).
@@ -367,7 +365,7 @@ J'ai bâti ce tuteur pour moi dans [Claude Code](https://claude.com/product/clau
 
 **Le jour de l'examen, 13 h 40 · Réviser pour l'examen**
 
-> [!ulysse] Ulysse · dicté
+> [!ulysse] Ulysse · message vocal
 > Salut. C'est l'examen ce soir, à 18 h 30. J'ai deux heures pour réviser, après faut que je mange, puis que je dorme un peu avant de partir.
 
 > [!claude] Claude

@@ -574,6 +574,7 @@ p:has(> img + img) > em:last-child {
 
 .conversation .c-note.on {
 	border-color: transparent;
+	border-left-color: var(--anchor-on);
 	box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3), 0 2px 6px 2px rgba(60, 64, 67, 0.15);
 }
 
@@ -606,7 +607,7 @@ p:has(> img + img) > em:last-child {
 	z-index: 1;
 }
 
-/* On a narrow screen, a comment follows its message: a yellow edge ties it to its words. */
-.conversation .c-notes .c-note {
+/* A yellow edge ties each comment to its words, in the margin and after its message alike. */
+.conversation .c-note {
 	border-left: 3px solid var(--anchor-on);
 }
