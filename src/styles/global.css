@@ -413,13 +413,17 @@ p:has(> img + img) > em:last-child {
 
 /* The tutor's demo (site/tuteur.md, `conversation: true`): a conversation in Claude Code's look, its comments
    beside it as in Google Docs (public/conversation.js). The student writes in a bubble on the right; the tutor
-   answers in plain text; the words a comment is about are highlighted in yellow, and hovering either lights both. */
+   answers in plain text; the words a comment is about are highlighted in yellow, and hovering either lights both.
+   The drawings are the round-3 story page's own (site/images/tuteur-*.svg). */
 
 .conversation {
 	--bubble: var(--wash);
 	--note-line: #dadce0;
-	--anchor: rgba(255, 208, 0, 0.3);
-	--anchor-on: rgba(255, 186, 0, 0.75);
+	/* The round-3 page's yellows, solid, so a highlight looks the same on white and in a bubble: the words, the
+	   words lit, and a thin golden line under them that the comment's edge repeats. */
+	--anchor: #fff0a0;
+	--anchor-on: #ffd84d;
+	--anchor-line: #e5c94a;
 	position: relative;
 }
 
@@ -506,17 +510,72 @@ p:has(> img + img) > em:last-child {
 	color: var(--text);
 }
 
+/* The slide's drawing, as wide as the slide, between its title and its line of text. */
+.conversation aside[data-callout='diapo'] > p:has(> img) {
+	padding: 8px 22px 4px;
+}
+
+.conversation aside[data-callout='diapo'] img {
+	width: 100%;
+}
+
+/* A figure: the drawing, under its name in small gray. */
 .conversation aside[data-callout='figure'] {
-	margin: 0.5em 0 1em;
-	padding-left: 12px;
-	border-left: 3px solid var(--line);
-	font-size: 15px;
-	color: var(--muted);
+	margin: 0.75em 0 1em;
 }
 
 .conversation aside[data-callout='figure'] > .callout-title {
+	margin-bottom: 8px;
+}
+
+/* A small page in the conversation, which the student fills in or taps (the trace, the proof): a frame with
+   its name on top, the table inside, and the choices under it as buttons. */
+.conversation aside[data-callout='page'] {
+	width: fit-content;
+	max-width: 100%;
+	margin: 0.5em 0 0;
+	overflow-x: auto;
+	background: var(--bg);
+	border: 1px solid var(--line);
+	border-radius: var(--radius);
+}
+
+.conversation aside[data-callout='page'] > .callout-title {
+	margin: 0;
+	padding: 5px 12px;
+	border-bottom: 1px solid var(--line);
+}
+
+.conversation aside[data-callout='page'] table {
+	margin: 0;
+	border-style: hidden;
+}
+
+.conversation aside[data-callout='page'] th,
+.conversation aside[data-callout='page'] td {
+	padding: 4px 8px;
+}
+
+/* A bubble holding a page may take the whole width, so the page's table fits on a phone. */
+.conversation aside[data-callout='ulysse']:has(> aside[data-callout='page']) {
+	max-width: 100%;
+}
+
+.conversation aside[data-callout='page'] > ul {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin: 0;
+	padding: 10px 12px;
+	list-style: none;
+	border-top: 1px solid var(--line);
+}
+
+.conversation aside[data-callout='page'] > ul > li {
+	padding: 2px 10px;
+	border: 1px solid var(--line);
+	border-radius: var(--radius);
 	font-size: 13px;
-	color: var(--text);
 }
 
 .conversation aside[data-callout='ulysse'] code,
@@ -549,12 +608,27 @@ p:has(> img + img) > em:last-child {
 
 .conversation mark.c-anchor {
 	background: var(--anchor);
+	box-shadow: 0 1px 0 var(--anchor-line);
 	border-radius: 2px;
 	transition: background 0.12s;
 }
 
 .conversation mark.c-anchor.on {
 	background: var(--anchor-on);
+}
+
+/* A comment on a whole image: the image sits in the highlight's yellow, as words do. */
+.conversation mark.c-anchor:has(> img) {
+	display: block;
+	width: fit-content;
+	max-width: 100%;
+	padding: 4px;
+	box-shadow: none;
+	border-radius: var(--radius);
+}
+
+.conversation mark.c-anchor > img {
+	background: var(--bg);
 }
 
 .conversation .c-note {
@@ -574,7 +648,7 @@ p:has(> img + img) > em:last-child {
 
 .conversation .c-note.on {
 	border-color: transparent;
-	border-left-color: var(--anchor-on);
+	border-left-color: var(--anchor-line);
 	box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3), 0 2px 6px 2px rgba(60, 64, 67, 0.15);
 }
 
@@ -607,7 +681,8 @@ p:has(> img + img) > em:last-child {
 	z-index: 1;
 }
 
-/* A yellow edge ties each comment to its words, in the margin and after its message alike. */
+/* A yellow edge ties each comment to its words, in the margin and after its message alike: the golden line
+   under the words. */
 .conversation .c-note {
-	border-left: 3px solid var(--anchor-on);
+	border-left: 3px solid var(--anchor-line);
 }

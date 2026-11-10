@@ -72,4 +72,6 @@
 	addEventListener('resize', again);
 	addEventListener('load', again);
 	document.fonts?.ready.then(again);
+	// An image loads only as it comes near, and pushes down what follows it: the comments below it move too.
+	for (const img of root.querySelectorAll('img')) if (!img.complete) img.addEventListener('load', again, { once: true });
 })();

@@ -41,7 +41,9 @@ J'ai bâti ce tuteur pour moi dans [Claude Code](https://claude.com/product/clau
 > > [!diapo] Diapo 1 sur 3 · Complément · non officiel
 > > **Pourquoi chercher ?**
 > >
-> > Un graphe, du départ jusqu'au but : un état de départ, des opérateurs, un but.
+> > ![[tuteur-diapo-1-pourquoi-chercher.svg|Un graphe, du départ jusqu'au but : un état de départ, des opérateurs, un but.]]
+> >
+> > Un état de départ · des opérateurs · un but
 >
 >
 > **Pourquoi ça compte.** Un GPS qui trouve ta route, un robot qui range un entrepôt, un programme qui résout un Rubik's Cube : ils font tous la même chose. Ils partent d'un état et cherchent une suite d'actions qui mène au but. Le problème, c'est la taille : un Rubik's Cube a plus de {==43 milliards de milliards==}{>>Le pourquoi vient avant la méthode, et il est large : pas « c'est à l'examen », mais à quoi ça sert dans le monde. Le problème d'abord, la solution ensuite.<<} d'états, impossible de tous les essayer. Toute la question du chapitre est là : **dans quel ordre explorer**, pour trouver le but sans tout visiter.
@@ -56,9 +58,11 @@ J'ai bâti ce tuteur pour moi dans [Claude Code](https://claude.com/product/clau
 >
 >
 > > [!diapo] Diapo 2 sur 3 · Complément · non officiel
-> > **Largeur d'abord.**
+> > **Largeur d'abord**
 > >
-> > Un arbre : A ; B et C ; D et E sous B, F sous C ; les niveaux 0, 1 et 2 en bandes. « OUVERTS est une file : premier arrivé, premier servi. »
+> > ![[tuteur-diapo-2-largeur-d-abord.svg|Un arbre : A ; B et C ; D et E sous B, F sous C ; les niveaux 0, 1 et 2 en bandes.]]
+> >
+> > OUVERTS est une file : premier arrivé, premier servi
 >
 >
 > **L'idée.** On explore niveau par niveau : d'abord tous les états à une action du départ, puis tous ceux à deux actions, et ainsi de suite, comme une tache d'encre qui s'étend {==(analogie de Claude)==}{>>Les images du tuteur sont marquées comme les siennes : l'étudiant sait toujours ce qui vient du cours et ce qui n'en vient pas.<<}.
@@ -82,9 +86,11 @@ J'ai bâti ce tuteur pour moi dans [Claude Code](https://claude.com/product/clau
 > [!claude] Claude
 >
 > > [!diapo] Diapo 3 sur 3 · Complément · non officiel
-> > **Profondeur d'abord.**
+> > **Profondeur d'abord**
 > >
-> > Le même arbre, un trait qui plonge de A vers B puis D. « OUVERTS est une pile : dernier arrivé, premier servi. »
+> > ![[tuteur-diapo-3-profondeur-d-abord.svg|Le même arbre, un trait qui plonge de A vers B puis D.]]
+> >
+> > OUVERTS est une pile : dernier arrivé, premier servi
 >
 >
 > **L'idée.** {==Ton réflexe de tantôt==}{>>L'erreur de l'étudiant devient l'entrée en matière de la diapo suivante : rien n'est perdu, et la différence entre les deux stratégies se voit d'elle-même.<<}, c'est exactement ça : on plonge dans une branche jusqu'au bout avant d'essayer la suivante.
@@ -105,17 +111,20 @@ J'ai bâti ce tuteur pour moi dans [Claude Code](https://claude.com/product/clau
 >
 >
 > > [!figure] Le graphe
-> > A mène à B et C ; B à D et E ; C à E et F ; E à G, le but.
+> >
+> > ![[tuteur-graphe-de-a-a-g.svg|A mène à B et C ; B à D et E ; C à E et F ; E à G, le but.]]
 
 > [!ulysse] Ulysse · {==dans la page du tableau==}{>>Le tableau est une petite page dans la conversation : l'étudiant clique dans les cases et écrit, ou dicte, au choix. Le tuteur lit ce qui est écrit, case par case.<<}
 >
-> | Tour | OUVERTS | FERMÉS |
-> |---|---|---|
-> | 0 | [A] | [] |
-> | 1 | [B, C] | [A] |
-> | 2 | [C, D, E] | [A, B] |
-> | 3 | [D, E, E, F] | [A, B, C] |
-> | 4 | [E, E, F] | [A, B, C, D] |
+> > [!page] Trace · largeur d'abord
+> >
+> > | Tour | OUVERTS | FERMÉS |
+> > |---|---|---|
+> > | 0 | [A] | [] |
+> > | 1 | [B, C] | [A] |
+> > | 2 | [C, D, E] | [A, B] |
+> > | 3 | [D, E, E, F] | [A, B, C] |
+> > | 4 | [E, E, F] | [A, B, C, D] |
 
 > [!claude] Claude
 > ⚠️ Presque. Ligne 3 : E est déjà dans OUVERTS, arrivé par B. Ta trace l'ajoute une deuxième fois : {==E serait exploré deux fois==}{>>Le tuteur ne récite pas la règle : il dit ce que la trace entraînerait. Sur un grand graphe, les doublons font exploser la recherche, et c'est le piège classique des traces faites à la main.<<}, et tout ce qui vient après lui aussi.
@@ -125,16 +134,18 @@ J'ai bâti ce tuteur pour moi dans [Claude Code](https://claude.com/product/clau
 
 > [!ulysse] Ulysse · le tableau corrigé, dans la page du tableau
 >
-> | Tour | OUVERTS | FERMÉS |
-> |---|---|---|
-> | 0 | [A] | [] |
-> | 1 | [B, C] | [A] |
-> | 2 | [C, D, E] | [A, B] |
-> | 3 | [D, E, F] | [A, B, C] |
-> | 4 | [E, F] | [A, B, C, D] |
-> | 5 | [F, G] | [A, B, C, D, E] |
-> | 6 | [G] | [A, B, C, D, E, F] |
-> | 7 | G est choisi : c'est le but. | |
+> > [!page] Trace · largeur d'abord
+> >
+> > | Tour | OUVERTS | FERMÉS |
+> > |---|---|---|
+> > | 0 | [A] | [] |
+> > | 1 | [B, C] | [A] |
+> > | 2 | [C, D, E] | [A, B] |
+> > | 3 | [D, E, F] | [A, B, C] |
+> > | 4 | [E, F] | [A, B, C, D] |
+> > | 5 | [F, G] | [A, B, C, D, E] |
+> > | 6 | [G] | [A, B, C, D, E, F] |
+> > | 7 | G est choisi : c'est le but. | |
 
 > [!claude] Claude
 > ✅ Ta trace est juste, jusqu'à G. Il reste un quart d'heure sur tes deux heures : on s'arrête là. {==Je note où tu en es==}{>>Rien ne se perd entre deux séances : le tuteur écrit où reprendre dans le dossier du cours, avec ce qui a accroché. La séance suivante repart de là.<<} : la matière est vue, l'exercice est fait, et les doublons ont accroché une fois. La prochaine fois, on s'attaque au problème de tantôt : chercher sans tout explorer.
@@ -155,10 +166,11 @@ J'ai bâti ce tuteur pour moi dans [Claude Code](https://claude.com/product/clau
 >
 >
 > > [!figure] Le graphe, en quatre niveaux
-> > S ; K, B, M ; D et F sous K, F aussi et H sous B, J et P sous M ; L sous D, N et Q sous F, R sous J, T et X sous P. Le but est X.
+> >
+> > ![[tuteur-graphe-de-s-a-x.svg|S ; K, B, M ; D et F sous K, F aussi et H sous B, J et P sous M ; L sous D, N et Q sous F, R sous J, T et X sous P. Le but est X.]]
 
 > [!ulysse] Ulysse · une image
-> *L'image du graphe, avec {==un trait rouge par-dessus les états==}{>>Quinze lettres à écrire dans l'ordre, ou un trait à tracer : répondre en dessinant ne coûte presque rien, et un exercice qu'on aurait sauté se fait.<<} : S, K, B, M, D, F, H, J, P, L, N, Q, R, T, X.*
+> {==![[tuteur-graphe-de-s-a-x-trace-en-rouge.svg|L'image du graphe, avec un trait rouge par-dessus les états : S, K, B, M, D, F, H, J, P, L, N, Q, R, T, X.]]==}{>>Quinze lettres à écrire dans l'ordre, ou un trait à tracer : répondre en dessinant ne coûte presque rien, et un exercice qu'on aurait sauté se fait.<<}
 
 > [!claude] Claude
 > Je lis ton tracé : S, K, B, M, D, F, H, J, P, L, N, Q, R, T, X.
@@ -176,7 +188,8 @@ J'ai bâti ce tuteur pour moi dans [Claude Code](https://claude.com/product/clau
 >
 >
 > > [!figure] La carte
-> > routes S–A 2, S–B 4, A–C 3, A–D 4, C–E 2, E–G 3, B–G 7 ; dans les cercles, h : S 8, A 7, B 4, C 5, D 6, E 3, G 0.
+> >
+> > ![[tuteur-carte-de-s-a-g.svg|Les routes S–A 2, S–B 4, A–C 3, A–D 4, C–E 2, E–G 3, B–G 7 ; dans les cercles, h : S 8, A 7, B 4, C 5, D 6, E 3, G 0.]]
 
 > [!ulysse] Ulysse · message vocal
 > Ouf. Réécrire OUVERTS au complet à chaque tour, avec tous les f… c'est long, puis c'est juste des additions. Je sais comment ça marche. Tu peux le faire pour moi ?
@@ -386,7 +399,8 @@ J'ai bâti ce tuteur pour moi dans [Claude Code](https://claude.com/product/clau
 >
 >
 > > [!figure] Une rangée de quatre cases
-> > deux jetons noirs, un jeton blanc, une case vide.
+> >
+> > ![[tuteur-rangee-de-quatre-cases.svg|Deux jetons noirs, un jeton blanc, une case vide.]]
 >
 >
 > Donne la structure d'un état.
@@ -453,27 +467,37 @@ J'ai bâti ce tuteur pour moi dans [Claude Code](https://claude.com/product/clau
 > Il manque la règle de la ligne 3. {==Choisis-la==}{>>Une question posée comme sur Codecademy : la preuve sous les yeux, une case vide, des choix à toucher. Rien à recopier : l'attention va à la seule règle qui compte.<<}.
 >
 >
-> | Ligne | Énoncé | Justification |
-> |---|---|---|
-> | 1 | pluie(Québec) | Hypothèse |
-> | 2 | froid(Québec) | Hypothèse |
-> | E | ∀x (pluie(x) ∧ froid(x) → verglas(x)) | Hypothèse |
-> | 3 | pluie(Québec) ∧ froid(Québec) | [ ? ] : 1, 2 |
-> | 4 | verglas(Québec) | Modus Ponens : 3, E, avec x unifiée avec Québec |
->
-> **Choix :** Conjonction · Simplification · Modus Ponens · Modus Tollens
+> > [!page] Question · la règle de la ligne 3
+> >
+> > | Ligne | Énoncé | Justification |
+> > |---|---|---|
+> > | 1 | pluie(Québec) | Hypothèse |
+> > | 2 | froid(Québec) | Hypothèse |
+> > | E | ∀x (pluie(x) ∧ froid(x) → verglas(x)) | Hypothèse |
+> > | 3 | pluie(Québec) ∧ froid(Québec) | [ ? ] : 1, 2 |
+> > | 4 | verglas(Québec) | Modus Ponens : 3, E, avec x unifiée avec Québec |
+> >
+> > - Conjonction
+> > - Simplification
+> > - Modus Ponens
+> > - Modus Tollens
 
 > [!ulysse] Ulysse · touche « Conjonction »
 >
-> | Ligne | Énoncé | Justification |
-> |---|---|---|
-> | 1 | pluie(Québec) | Hypothèse |
-> | 2 | froid(Québec) | Hypothèse |
-> | E | ∀x (pluie(x) ∧ froid(x) → verglas(x)) | Hypothèse |
-> | 3 | pluie(Québec) ∧ froid(Québec) | [Conjonction] : 1, 2 |
-> | 4 | verglas(Québec) | Modus Ponens : 3, E, avec x unifiée avec Québec |
->
-> **Choix :** Conjonction · Simplification · Modus Ponens · Modus Tollens
+> > [!page] Question · la règle de la ligne 3
+> >
+> > | Ligne | Énoncé | Justification |
+> > |---|---|---|
+> > | 1 | pluie(Québec) | Hypothèse |
+> > | 2 | froid(Québec) | Hypothèse |
+> > | E | ∀x (pluie(x) ∧ froid(x) → verglas(x)) | Hypothèse |
+> > | 3 | pluie(Québec) ∧ froid(Québec) | [Conjonction] : 1, 2 |
+> > | 4 | verglas(Québec) | Modus Ponens : 3, E, avec x unifiée avec Québec |
+> >
+> > - Conjonction
+> > - Simplification
+> > - Modus Ponens
+> > - Modus Tollens
 
 > [!claude] Claude
 > ✅ Conjonction. Le Modus Ponens de la ligne 4 a besoin de toute sa condition sur une seule ligne, pluie(Québec) ∧ froid(Québec) : la ligne 3 la réunit d'abord.
