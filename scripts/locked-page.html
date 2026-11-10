@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{{TITLE}} · Ulysse Gagné</title>
+		<meta name="description" content="{{DESCRIPTION}}" />
+		<meta name="robots" content="noindex" />
+		<link rel="icon" href="/favicon.ico" sizes="32x32" />
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="Ulysse Gagné" />
+		<meta property="og:title" content="{{TITLE}}" />
+		<meta property="og:description" content="{{DESCRIPTION}}" />
+		<!-- A locked page, written by scripts/lock-page.mjs: its text is below only as ciphertext, decrypted in the browser with the password. -->
+		<style>
+			/* The site's design system (src/styles/global.css): a calm document in black and white. */
+			:root {
+				--bg: #ffffff;
+				--text: #222222;
+				--muted: #5c5c5c;
+				--line: #e0e0e0;
+				--wash: #f5f5f5;
+				--accent: #0066cc;
+				--font: ui-sans-serif, -apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI', Roboto, sans-serif;
+				--mono: ui-monospace, SFMono-Regular, 'Cascadia Mono', 'Roboto Mono', Menlo, Consolas, monospace;
+				--measure: 700px;
+				--radius: 4px;
+				color-scheme: light;
+			}
+			*, *::before, *::after { box-sizing: border-box; }
+			body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font); font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+			::selection { background: rgba(0, 102, 204, 0.22); }
+			:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+			a { color: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+			a:hover { color: var(--accent); }
+			a.out::after { content: '↗'; display: inline-block; margin-left: 0.15em; font-size: 0.85em; }
+			button, input { font: inherit; color: inherit; }
+
+			.path { max-width: var(--measure); margin: 0 auto; padding: 1.25rem 1rem 0; font-size: 13px; color: var(--muted); }
+			.path a { color: inherit; text-decoration: none; }
+			.path a:hover { color: var(--accent); }
+			.path .sep { margin: 0 0.4em; }
+			.path .here { color: var(--text); }
+			main { max-width: var(--measure); margin: 0 auto; padding: 2.5rem 1rem 6rem; }
+			h1, h2, h3 { line-height: 1.2; margin: 2em 0 0.5em; }
+			h1 { font-size: 1.618em; font-weight: 700; margin-top: 0; }
+			h2 { font-size: 1.462em; font-weight: 600; }
+			p, ol, ul { margin: 0 0 1em; }
+			ol, ul { padding-left: 1.4em; }
+			li { margin-bottom: 0.4em; }
+			strong { font-weight: 600; }
+			code { font-family: var(--mono); font-size: 0.875em; background: var(--wash); border-radius: var(--radius); padding: 0.1em 0.3em; }
+			.lead { font-size: 1.125em; }
+
+			/* The lock */
+			.lock { margin-top: 2em; }
+			.lock label { display: block; font-size: 14px; color: var(--muted); margin-bottom: 6px; }
+			.lock .row { display: flex; gap: 8px; flex-wrap: wrap; }
+			.lock input { flex: 1 1 14em; max-width: 22em; border: 1px solid var(--line); border-radius: var(--radius); padding: 7px 10px; background: var(--bg); }
+			.lock input:focus { border-color: var(--text); outline: none; }
+			.lock button { background: var(--text); color: var(--bg); border: 1px solid var(--text); border-radius: var(--radius); padding: 7px 16px; cursor: pointer; }
+			.lock button:disabled { opacity: 0.5; cursor: default; }
+			.lock .msg { font-size: 14px; color: #b00020; margin: 8px 0 0; min-height: 1.5em; }
+
+			/* A conversation, as on /tuteur: Ulysse in bubbles on the right, Claude in plain text */
+			.conversation { margin-top: 2em; }
+			.conversation aside.callout { margin: 0 0 1.25em; }
+			.conversation .callout-title { font-size: 12px; font-weight: 500; color: var(--muted); margin: 0 0 3px; }
+			.conversation aside.callout > p:last-child { margin-bottom: 0; }
+			.conversation aside[data-callout='ulysse'] { width: fit-content; max-width: 85%; margin-left: auto; background: var(--wash); border-radius: 18px; padding: 9px 16px 11px; }
+			.conversation aside[data-callout='scene'] > .callout-title { text-align: center; font-size: 13px; margin: 2em 0; }
+			.conversation h2 { font-size: 1.318em; margin-top: 2.2em; }
+			@media (max-width: 520px) {
+				.conversation aside[data-callout='ulysse'] { max-width: 92%; }
+			}
+		</style>
+	</head>
+	<body>
+		<nav class="path" aria-label="Path">{{CRUMBS}}</nav>
+		<main>
+			<h1>{{TITLE}}</h1>
+			<p class="lead">{{LEAD}}</p>
+			<form class="lock" id="lock" autocomplete="off">
+				<label for="answer">{{HINT}}</label>
+				<div class="row">
+					<input id="answer" name="answer" type="text" autocapitalize="none" autocorrect="off" spellcheck="false" required />
+					<button id="open" type="submit">Open</button>
+				</div>
+				<p class="msg" id="msg" role="status"></p>
+			</form>
+			<div class="conversation" id="content" hidden></div>
+		</main>
+		<script>
+			const SEALED = {{PAYLOAD}};
+			const KEY = 'locked:' + {{PATH}};
+			const normalize = (s) => s.normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+			const bytes = (b64) => Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+
+			async function open(answer) {
+				const password = normalize(answer);
+				if (!password) return false;
+				try {
+					const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
+					const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: bytes(SEALED.salt), iterations: SEALED.iterations, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+					const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: bytes(SEALED.iv) }, key, bytes(SEALED.data));
+					const content = document.getElementById('content');
+					content.innerHTML = new TextDecoder().decode(plain);
+					content.hidden = false;
+					document.getElementById('lock').hidden = true;
+					try {
+						localStorage.setItem(KEY, password);
+					} catch (e) {}
+					return true;
+				} catch (e) {
+					return false;
+				}
+			}
+
+			const form = document.getElementById('lock');
+			const input = document.getElementById('answer');
+			const button = document.getElementById('open');
+			const msg = document.getElementById('msg');
+			form.addEventListener('submit', async (e) => {
+				e.preventDefault();
+				button.disabled = true;
+				msg.textContent = '';
+				const ok = await open(input.value);
+				button.disabled = false;
+				if (!ok) {
+					msg.textContent = 'That’s not it.';
+					input.select();
+				}
+			});
+
+			// Opened before in this browser: open again without asking.
+			let remembered = null;
+			try {
+				remembered = localStorage.getItem(KEY);
+			} catch (e) {}
+			if (remembered) open(remembered);
+			else input.focus({ preventScroll: true });
+		</script>
+	</body>
+</html>

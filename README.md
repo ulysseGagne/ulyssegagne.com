@@ -16,7 +16,7 @@ An address with a slash at the end, `ulyssegagne.com/tuteur/`, lands on the same
 
 Every element a page can use, with the Markdown that makes it: `site/guide-de-style.md`, at ulyssegagne.com/guide-de-style (hidden from search engines).
 
-One page lives outside `site/`: `public/never-enough.html`, at ulyssegagne.com/never-enough, a standalone page in English that plays clips of Dr. K's YouTube videos in order. It copies the site's look but not its build, no page links to it, and it stays out of search engines; its words and its list of clips are in the file itself.
+Two pages for a friend live outside `site/`, in `public/`, in English, in the site's look but not its build, and out of search engines: `never-enough.html`, at ulyssegagne.com/never-enough, which plays clips of Dr. K's YouTube videos in order (its words and its list of clips are in the file itself), and `never-enough/behind-the-scenes.html`, how it was made, a locked page (« Lock a page », below).
 
 ## Add a page
 
@@ -48,6 +48,16 @@ One page lives outside `site/`: `public/never-enough.html`, at ulyssegagne.com/n
 3. If you want a caption, an italic line right under the image, its file name: `*one-line-1-map.png*`. Several images on one line sit side by side.
 
 No need to shrink images first: each one is made light (WebP) when the site is built.
+
+## Lock a page
+
+The repository is public, so a page behind a password may reach it only encrypted.
+
+1. Its source stays outside the repository: Markdown with `title`, `description`, `path`, `lead` and `hint` (the line above the field) on top, and callouts for a conversation, as on `/tuteur`.
+2. `node scripts/lock-page.mjs <source.md> public/<path>.html` asks for the password and writes the page, its text as ciphertext (AES-GCM, the key made from the password by PBKDF2) that the visitor's browser decrypts. The answer counts without case, spaces, accents or emoji.
+3. The password goes nowhere else: not in a file, a commit message or a log.
+
+First locked page: `public/never-enough/behind-the-scenes.html`.
 
 ## In Obsidian
 
