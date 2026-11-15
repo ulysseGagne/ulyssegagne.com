@@ -22,3 +22,7 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# The private side's server: local test files, never committed (worker/)
+.dev.vars
+.wrangler/

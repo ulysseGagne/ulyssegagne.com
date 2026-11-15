@@ -20,8 +20,10 @@
 
 	function place() {
 		root.classList.toggle('wide', wide.matches);
+		// A comment already in its place stays put: moving it would take the focus from a box typed in it
+		// (the private view's replies, public/notes.js).
 		if (wide.matches) {
-			for (const note of notes) column.append(note);
+			for (const note of notes) if (note.parentElement !== column) column.append(note);
 			const base = root.getBoundingClientRect().top;
 			let floor = 0;
 			for (const note of notes) {
@@ -43,7 +45,7 @@
 				list.className = 'c-notes';
 				message.append(list);
 			}
-			list.append(note);
+			if (note.parentElement !== list) list.append(note);
 		}
 	}
 

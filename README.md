@@ -59,6 +59,31 @@ The repository is public, so a page behind a password may reach it only encrypte
 
 First locked page: `public/never-enough/behind-the-scenes.html`.
 
+## The private view
+
+Every page has a small padlock at the top right. It asks for a password, once per device; after that it switches the page between what visitors see, « Public », and the private view, « Privé », where Ulysse comments on the site and Claude answers:
+
+- Select any words, then « Commenter »: a note on those words, right under their paragraph. « Répondre » under each of the tutor demo's comments; a note on the whole page in the box at the top. It all saves by itself as it's typed, on any device, the iPhone included; written offline, it waits on the device and leaves once the connection is back.
+- Claude's notes sit at the top, folded under their titles, or under the words they're about; some offer options to pick, and each has a box to answer.
+
+How it works:
+
+1. `public/notes.js`, loaded by every page (`src/layouts/Base.astro`), draws it. The password never leaves the device: the browser turns it into a key (PBKDF2, 310 000 rounds), and that key opens the private side.
+2. `worker/`: the private side, a small server on Ulysse's Cloudflare account, `https://ulyssegagne-notes.ulyssegagne.workers.dev`, with its database (Cloudflare D1, `ulyssegagne-notes`: one table, `worker/schema.sql`). It knows two keys, each only by its SHA-256 hash, kept as secrets: Ulysse's (`ULYSSE_HASH`) and Claude's (`CLAUDE_HASH`). Nothing private is in this repository, which is public.
+3. `scripts/notes.mjs`: Claude's side, on Ulysse's Mac, with Claude's key in `~/.config/ulyssegagne-notes/key`. `node scripts/notes.mjs export` prints what's waiting, each note with its words and its thread; `reply`, `put` and `done` answer, add and close (the top of the script says each).
+
+To change it (from `worker/`, after `npx wrangler@4 login` if Cloudflare asks: Ulysse's yes, in the browser):
+
+- The server's code: `npx wrangler@4 deploy`.
+- A new password: Ulysse types it, unseen, after this line; every device then asks for it again.
+
+  ```bash
+  read -rs P && P="$P" node -e 'const c=require("crypto");const t=c.pbkdf2Sync(process.env.P.trim(),"ulyssegagne.com/notes",310000,32,"sha256").toString("hex");process.stdout.write(c.createHash("sha256").update(t).digest("hex"))' | npx wrangler@4 secret put ULYSSE_HASH
+  ```
+
+- A new key for Claude: `(umask 077; openssl rand -hex 32 > ~/.config/ulyssegagne-notes/key)`, then `tr -d '\n' < ~/.config/ulyssegagne-notes/key | shasum -a 256 | cut -d' ' -f1 | tr -d '\n' | npx wrangler@4 secret put CLAUDE_HASH`.
+- A test, away from the real notes: `npx wrangler@4 dev` with a `worker/.dev.vars` (out of git) that holds a test password's two hashes, then `localStorage['notes.api'] = 'http://localhost:8787'` in the browser's console, on `npm run dev`.
+
 ## In Obsidian
 
 - Links work as in Documents: `[[tuteur]]` is the page named `tuteur.md` anywhere in `site/`, shown with its title; `[[tuteur|other words]]` shows other words; `![[photo.jpg]]` is an image anywhere in `site/`. A name that matches no file shows as plain text, and the build prints a warning. Callouts, folds and `==highlights==` work too.

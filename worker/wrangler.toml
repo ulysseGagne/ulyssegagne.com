@@ -1,0 +1,13 @@
+# The private side's small server (index.js) and its database, on Ulysse's Cloudflare account.
+# From this folder: `npx wrangler@4 deploy` puts the code online; `npx wrangler@4 d1 execute ulyssegagne-notes
+# --remote --file schema.sql` sets up the table. Its two secrets, ULYSSE_HASH and CLAUDE_HASH, are set with
+# `npx wrangler@4 secret put <NAME>`: README, « The private view ».
+name = "ulyssegagne-notes"
+main = "index.js"
+compatibility_date = "2026-11-01"
+workers_dev = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "ulyssegagne-notes"
+database_id = "14305a86-780c-42c8-8962-cb96519d7bba"
