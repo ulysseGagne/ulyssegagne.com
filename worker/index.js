@@ -106,8 +106,10 @@ async function save(env, role, id, input) {
 				.run();
 		}
 	} else if (old?.author === 'ulysse') {
+		// On Ulysse's notes, Claude marks them dealt with, or moves them with their words when a page moves or splits.
 		const status = STATUS.has(input.status) ? input.status : old.status;
-		await env.DB.prepare('UPDATE notes SET status = ?, updated = ? WHERE id = ?').bind(status, now, id).run();
+		const page = typeof input.page === 'string' && input.page.startsWith('/') ? text(input.page, 300) : old.page;
+		await env.DB.prepare('UPDATE notes SET status = ?, page = ?, updated = ? WHERE id = ?').bind(status, page, now, id).run();
 	} else {
 		const page = text(input.page ?? old?.page, 300);
 		if (!page?.startsWith('/')) return { error: 'bad page' };

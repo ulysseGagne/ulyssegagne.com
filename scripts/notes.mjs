@@ -8,6 +8,7 @@
 //   node scripts/notes.mjs reply <id> <text>                 Claude's answer under a note
 //   node scripts/notes.mjs done <id>…                        notes dealt with: they fade on the page
 //   node scripts/notes.mjs open <id>…                        and back to open
+//   node scripts/notes.mjs move <page> <id>…                 notes to another page, when theirs moves or splits
 //
 // The key is Claude's, in ~/.config/ulyssegagne-notes/key on Ulysse's Mac (or NOTES_KEY); the server is the real
 // one unless NOTES_API says otherwise (a local test server: http://localhost:8787).
@@ -143,6 +144,14 @@ switch (command) {
 	case 'open':
 		await setStatus(args, 'open');
 		break;
+	case 'move': {
+		// A note's words stay as they are; only its page changes, so it shows where its words now are.
+		const [page, ...ids] = args;
+		if (!page?.startsWith('/') || !ids.length) fail('Usage: node scripts/notes.mjs move <page> <id>…');
+		for (const id of ids) await call(`/notes/${id}`, { method: 'PUT', body: JSON.stringify({ page }) });
+		console.log(`${ids.length} note${ids.length > 1 ? 's' : ''} moved to ${page}.`);
+		break;
+	}
 	default:
-		fail('Usage: node scripts/notes.mjs export | json | put <file> | reply <id> <text> | done <id>… | open <id>…  (the top of this file says more)');
+		fail("Usage: node scripts/notes.mjs export | json | put <file> | reply <id> <text> | done <id>… | open <id>… | move <page> <id>…  (the top of this file says more)");
 }

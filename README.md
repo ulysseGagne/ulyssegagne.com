@@ -8,7 +8,7 @@ The whole site is the folder `site/`. Each `.md` file is a page, at the address 
 
 - `site/index.md` is the welcome page, ulyssegagne.com: the site's two sections, as links.
 - `site/a-propos.md` is ulyssegagne.com/a-propos (« À propos »), and the pages it links to sit in the folder of the same name: `site/a-propos/hide-and-stalk.md` is ulyssegagne.com/a-propos/hide-and-stalk.
-- `site/tuteur.md` is ulyssegagne.com/tuteur.
+- `site/tuteur.md` is ulyssegagne.com/tuteur: a few lines, then its four sessions, one page each, in `site/tuteur/` (`site/tuteur/1-chercher-sans-se-perdre.md` is ulyssegagne.com/tuteur/1-chercher-sans-se-perdre). Each session ends with a link to the next one, then « ← Le tuteur socratique », the link back up.
 
 The path at the top of each page shows these levels, each part a link up: `ulyssegagne.com / a-propos / hide-and-stalk`.
 
@@ -70,7 +70,7 @@ How it works:
 
 1. `public/notes.js`, loaded by every page (`src/layouts/Base.astro`), draws it. The password never leaves the device: the browser turns it into a key (PBKDF2, 310 000 rounds), and that key opens the private side.
 2. `worker/`: the private side, a small server on Ulysse's Cloudflare account, `https://ulyssegagne-notes.ulyssegagne.workers.dev`, with its database (Cloudflare D1, `ulyssegagne-notes`: one table, `worker/schema.sql`). It knows two keys, each only by its SHA-256 hash, kept as secrets: Ulysse's (`ULYSSE_HASH`) and Claude's (`CLAUDE_HASH`). Nothing private is in this repository, which is public.
-3. `scripts/notes.mjs`: Claude's side, on Ulysse's Mac, with Claude's key in `~/.config/ulyssegagne-notes/key`. `node scripts/notes.mjs export` prints what's waiting, each note with its words and its thread; `reply`, `put` and `done` answer, add and close (the top of the script says each).
+3. `scripts/notes.mjs`: Claude's side, on Ulysse's Mac, with Claude's key in `~/.config/ulyssegagne-notes/key`. `node scripts/notes.mjs export` prints what's waiting, each note with its words and its thread; `reply`, `put` and `done` answer, add and close; `move` takes notes to another page when theirs moves or splits, their words untouched (the top of the script says each).
 
 To change it (from `worker/`, after `npx wrangler@4 login` if Cloudflare asks: Ulysse's yes, in the browser):
 
