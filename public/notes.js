@@ -779,7 +779,8 @@
 .pv-lock button,.pv-comment{border:0;border-radius:8px;background:var(--accent);color:#fff;font:inherit;font-size:16px;font-weight:600;padding:9px 16px;cursor:pointer}
 .pv-msg{min-height:1.3em;margin:6px 0 0;color:var(--muted)}
 /* Everything private is blue, Claude's notes and Ulysse's alike: the panel, the cards, the marks, the buttons. The
-   public page keeps its black, white and yellow, so what visitors see and what they don't never look alike. */
+   public page keeps its black, white and yellow, and blue only in its links' words: a private mark is dark words on a
+   blue wash, a link blue words on white, so what visitors see and what they don't never look alike. */
 :root{--pv-blue:#0066cc;--pv-ink:#123a66;--pv-muted:#4c6c93;--pv-line:#c4d8f1;--pv-wash:#eaf2fc;--pv-panel:#f5f9fe}
 .pv-panel{margin:0 0 2.5rem;padding:14px 16px;border:1px solid var(--pv-line);border-left:3px solid var(--pv-blue);border-radius:8px;background:var(--pv-panel);color:var(--pv-ink);font-size:14.5px;line-height:1.5}
 .pv-bar{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
