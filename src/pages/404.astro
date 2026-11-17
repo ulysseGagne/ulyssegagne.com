@@ -29,7 +29,7 @@ const pages = (await getCollection('pages', (page) => !page.data.noindex))
 			const video = /^\/yt\/([A-Za-z0-9_-]{11})$/.exec(path);
 			if (video) {
 				document.documentElement.style.display = 'none';
-				location.replace(origin + '/yt/?v=' + video[1] + (search ? '&' + search.slice(1) : '') + hash);
+				location.replace(origin + '/yt?v=' + video[1] + (search ? '&' + search.slice(1) : '') + hash);
 			}
 			const to = video ? null : moved[key] ?? (path === pathname ? null : path);
 			if (to) {

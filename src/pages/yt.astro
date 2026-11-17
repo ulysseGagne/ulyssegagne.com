@@ -1,0 +1,293 @@
+---
+import Base from '../layouts/Base.astro';
+// Une vidéo, par son lien (Ulysse, 2026-11-17 : « host it on my website », « it should use my website's design
+// guidelines »). Hors du site : aucun lien n'y mène, et les moteurs de recherche ne la voient pas.
+// Le lecteur de YouTube, sans ses commandes et hors d'atteinte de la souris : aucune de ses rangées ni de ses menus
+// ne peut s'ouvrir. La page a ses propres commandes, et couvre l'image une fois la vidéo finie, là où YouTube
+// montre d'autres vidéos. Adresse courte : /yt/<id> (404.astro y mène).
+---
+
+<Base title="Une vidéo, par son lien" description="Une vidéo YouTube, par son lien, sans rien autour." noindex>
+	<h1>Une vidéo, par son lien</h1>
+	<div id="video" hidden>
+		<div id="stage">
+			<div id="box">
+				<iframe id="player" title="La vidéo" tabindex="-1" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+				<div id="hit" title="Lecture ou pause"></div>
+				<div id="end"><strong>Fin</strong><span>Cliquer pour la revoir, ou coller un autre lien plus bas.</span></div>
+			</div>
+			<div id="bar">
+				<button id="pp" type="button" aria-label="Lecture ou pause">▶</button>
+				<div id="seek"><div id="fill"></div></div>
+				<span id="time"></span>
+				<button id="spd" type="button">1×</button>
+				<button id="snd" type="button">Son</button>
+				<button id="cp" type="button">Copier le lien</button>
+				<button id="fs" type="button">Plein écran</button>
+			</div>
+		</div>
+		<p class="keys">Espace : lecture ou pause. Flèches : 5 secondes. F : plein écran. M : son.</p>
+	</div>
+	<form id="f">
+		<input id="link" placeholder="Coller un lien YouTube" autocomplete="off" />
+		<button>Regarder</button>
+	</form>
+	<p id="note"></p>
+</Base>
+
+<style>
+	#stage {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		margin: 0 0 0.5em;
+		background: #000;
+		border-radius: var(--radius);
+		overflow: hidden;
+	}
+	#stage:fullscreen {
+		width: 100vw;
+		height: 100vh;
+		border-radius: 0;
+	}
+	#box {
+		position: relative;
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		background: #000;
+		overflow: hidden;
+	}
+	#stage:fullscreen #box {
+		flex: 1;
+		aspect-ratio: auto;
+	}
+	#player {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		border: 0;
+		pointer-events: none;
+	}
+	#hit {
+		position: absolute;
+		inset: 0;
+		z-index: 5;
+		cursor: pointer;
+	}
+	#end {
+		position: absolute;
+		inset: 0;
+		z-index: 6;
+		display: none;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 0.4em;
+		padding: 1em;
+		background: var(--wash);
+		color: var(--text);
+		text-align: center;
+		cursor: pointer;
+	}
+	#end.on {
+		display: flex;
+	}
+	#end span {
+		color: var(--muted);
+	}
+	#bar {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.5em;
+		padding: 0.5em;
+		background: var(--wash);
+		border: 1px solid var(--line);
+		border-top: 0;
+		border-radius: 0 0 var(--radius) var(--radius);
+	}
+	#stage:fullscreen #bar {
+		border-radius: 0;
+	}
+	button {
+		font: inherit;
+		font-size: 0.9em;
+		padding: 0.25em 0.7em;
+		border: 1px solid var(--line);
+		border-radius: var(--radius);
+		background: var(--bg);
+		color: var(--text);
+		cursor: pointer;
+	}
+	button:hover {
+		border-color: var(--accent);
+		color: var(--accent);
+	}
+	#pp {
+		min-width: 2.6em;
+	}
+	#seek {
+		flex: 1;
+		min-width: 6em;
+		height: 8px;
+		border-radius: 4px;
+		background: var(--line);
+		overflow: hidden;
+		cursor: pointer;
+	}
+	#fill {
+		width: 0;
+		height: 100%;
+		background: var(--accent);
+		pointer-events: none;
+	}
+	#time {
+		color: var(--muted);
+		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
+	}
+	.keys,
+	#note {
+		color: var(--muted);
+	}
+	form {
+		display: flex;
+		gap: 0.5em;
+		margin: 1em 0;
+	}
+	input {
+		flex: 1;
+		min-width: 0;
+		font: inherit;
+		padding: 0.35em 0.6em;
+		border: 1px solid var(--line);
+		border-radius: var(--radius);
+		background: var(--bg);
+		color: var(--text);
+	}
+	input:focus {
+		outline: 2px solid var(--accent);
+		outline-offset: -1px;
+	}
+</style>
+
+<script is:inline>
+	var LINK = /(?:youtube(?:-nocookie)?\.com\/(?:shorts\/|live\/|embed\/|watch\?(?:.*&)?v=)|youtu\.be\/)([A-Za-z0-9_-]{11})/;
+	function $(i) { return document.getElementById(i); }
+	function secondsOf(t) {
+		t = (t || '').toLowerCase();
+		if (/^\d+$/.test(t)) return +t;
+		var m = t.match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/);
+		return m ? +(m[1] || 0) * 3600 + +(m[2] || 0) * 60 + +(m[3] || 0) : 0;
+	}
+	function parse(text) {
+		text = (text || '').trim();
+		var id = null, t = 0;
+		if (/^[A-Za-z0-9_-]{11}$/.test(text)) id = text;
+		else {
+			var m = text.match(LINK);
+			if (m) id = m[1];
+			var n = text.match(/[?&](?:t|start)=([0-9hms]+)/);
+			if (n) t = secondsOf(n[1]);
+		}
+		return id ? { id: id, t: t } : null;
+	}
+	var q = new URLSearchParams(location.search), want = null;
+	if (/^[A-Za-z0-9_-]{11}$/.test(q.get('v') || '')) want = { id: q.get('v'), t: secondsOf(q.get('t')) };
+	else if (q.get('yt')) want = parse(q.get('yt'));
+	var player = null, state = -1, dur = 0, over = false, speeds = [1, 1.25, 1.5, 1.75, 2], si = 0;
+	function fmt(s) {
+		s = Math.max(0, Math.floor(s || 0));
+		var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60;
+		return (h ? h + ':' + (m < 10 ? '0' : '') : '') + m + ':' + (x < 10 ? '0' : '') + x;
+	}
+	function now() { try { return player.getCurrentTime() || 0; } catch (e) { return 0; } }
+	function draw() {
+		var t = now();
+		$('fill').style.width = (dur > 0 ? Math.min(100, (100 * t) / dur) : 0) + '%';
+		$('time').textContent = dur > 0 ? fmt(t) + ' / ' + fmt(dur) : '';
+		$('pp').textContent = state == 1 ? '❚❚' : '▶';
+	}
+	function show() { $('end').className = over ? 'on' : ''; draw(); }
+	function toggle() {
+		if (!player) return;
+		if (over) { over = false; try { player.seekTo(0, true); } catch (e) {} }
+		try { if (state == 1) player.pauseVideo(); else player.playVideo(); } catch (e) {}
+		show();
+	}
+	function full() { if (document.fullscreenElement) document.exitFullscreen(); else $('stage').requestFullscreen(); }
+	function move(by) { try { player.seekTo(Math.min(Math.max(0, now() + by), dur), true); } catch (e) {} setTimeout(draw, 300); }
+	function onYouTubeIframeAPIReady() {
+		player = new YT.Player('player', {
+			events: {
+				onReady: function () { setInterval(function () { try { dur = player.getDuration() || 0; } catch (e) {} draw(); }, 200); },
+				onStateChange: function (e) {
+					state = e.data;
+					if (state == 1) over = false;
+					if (state == 0) { over = true; try { player.stopVideo(); } catch (x) {} }
+					show();
+				},
+				onError: function (e) {
+					var c = e.data;
+					$('note').textContent =
+						c == 101 || c == 150 ? 'Le propriétaire de cette vidéo ne permet pas de la voir hors de YouTube.'
+						: c == 100 ? 'Cette vidéo n’existe pas, ou elle est privée.'
+						: c == 2 ? 'Ce n’est pas le lien d’une vidéo.'
+						: 'Cette vidéo ne peut pas être lue ici (erreur ' + c + ').';
+				},
+			},
+		});
+	}
+	if (want) {
+		history.replaceState(null, '', '/yt/' + want.id + (want.t ? '?t=' + want.t : '')); // l'adresse courte
+		$('video').hidden = false;
+		$('player').src = 'https://www.youtube-nocookie.com/embed/' + want.id + '?enablejsapi=1&origin=' + encodeURIComponent(location.origin)
+			+ '&rel=0&fs=0&playsinline=1&iv_load_policy=3&controls=0&disablekb=1' + (want.t ? '&start=' + want.t : '');
+		$('hit').addEventListener('click', toggle);
+		$('end').addEventListener('click', toggle);
+		$('pp').addEventListener('click', toggle);
+		$('seek').addEventListener('click', function (ev) {
+			if (!player) return;
+			var r = $('seek').getBoundingClientRect();
+			over = false;
+			try { player.seekTo(Math.min(1, Math.max(0, (ev.clientX - r.left) / r.width)) * dur, true); } catch (e) {}
+			show();
+			setTimeout(draw, 300);
+		});
+		$('spd').addEventListener('click', function () {
+			si = (si + 1) % speeds.length;
+			try { player.setPlaybackRate(speeds[si]); } catch (e) {}
+			$('spd').textContent = String(speeds[si]).replace('.', ',') + '×';
+		});
+		$('snd').addEventListener('click', function () {
+			try {
+				if (player.isMuted()) { player.unMute(); $('snd').textContent = 'Son'; }
+				else { player.mute(); $('snd').textContent = 'Muet'; }
+			} catch (e) {}
+		});
+		$('cp').addEventListener('click', function () {
+			var t = Math.floor(now()), url = 'https://youtu.be/' + want.id + (t > 5 ? '?t=' + t : '');
+			function done() { $('cp').textContent = 'Copié'; setTimeout(function () { $('cp').textContent = 'Copier le lien'; }, 1500); }
+			if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, function () { prompt('Le lien :', url); });
+			else prompt('Le lien :', url);
+		});
+		$('fs').addEventListener('click', full);
+		document.addEventListener('keydown', function (ev) {
+			if (!player || ev.target.tagName == 'INPUT' || ev.metaKey || ev.ctrlKey || ev.altKey) return;
+			if (ev.key == ' ' || ev.key == 'k') { ev.preventDefault(); toggle(); }
+			else if (ev.key == 'ArrowLeft' || ev.key == 'ArrowRight') { ev.preventDefault(); move(ev.key == 'ArrowLeft' ? -5 : 5); }
+			else if (ev.key == 'f') full();
+			else if (ev.key == 'm') $('snd').click();
+		});
+		var s = document.createElement('script');
+		s.src = 'https://www.youtube.com/iframe_api';
+		document.head.appendChild(s);
+	}
+	$('f').addEventListener('submit', function (ev) {
+		ev.preventDefault();
+		var w = parse($('link').value);
+		if (w) location.href = '/yt?v=' + w.id + (w.t ? '&t=' + w.t : '');
+		else $('note').textContent = 'Ce n’est pas le lien d’une vidéo.';
+	});
+</script>
