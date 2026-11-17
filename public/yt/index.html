@@ -89,6 +89,7 @@ function onYouTubeIframeAPIReady(){
     onError:function(e){ var c=e.data; $("note").textContent = (c==101||c==150) ? "This video's owner doesn't let it play outside YouTube."
       : (c==100) ? "This video doesn't exist, or it's private." : (c==2) ? "That isn't a video's link." : "This video can't be played here (error "+c+")." } }}) }
 if(want){
+  history.replaceState(null, "", "/yt/"+want.id+(want.t?"?t="+want.t:""));   // the short address: /yt/<id>
   $("video").hidden=false; $("head").hidden=true;
   $("player").src="https://www.youtube-nocookie.com/embed/"+want.id+"?enablejsapi=1&origin="+encodeURIComponent(location.origin)
     +"&rel=0&fs=0&playsinline=1&iv_load_policy=3&controls=0&disablekb=1"+(want.t?"&start="+want.t:"");
@@ -108,7 +109,7 @@ if(want){
   var s=document.createElement("script"); s.src="https://www.youtube.com/iframe_api"; document.head.appendChild(s);
 }
 $("f").addEventListener("submit",function(ev){ ev.preventDefault(); var w=parse($("link").value);
-  if(w) location.href=location.pathname+"?v="+w.id+(w.t?"&t="+w.t:""); else $("note").textContent="That isn't a video's link." });
+  if(w) location.href="/yt/?v="+w.id+(w.t?"&t="+w.t:""); else $("note").textContent="That isn't a video's link." });
 </script>
 </body>
 </html>

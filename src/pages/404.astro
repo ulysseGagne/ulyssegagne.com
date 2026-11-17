@@ -25,7 +25,13 @@ const pages = (await getCollection('pages', (page) => !page.data.noindex))
 			try {
 				key = decodeURIComponent(path).normalize('NFC').toLowerCase();
 			} catch {}
-			const to = moved[key] ?? (path === pathname ? null : path);
+			// A video by its link, at its short address: ulyssegagne.com/yt/<id> is /yt/?v=<id> (the video page shows the short one).
+			const video = /^\/yt\/([A-Za-z0-9_-]{11})$/.exec(path);
+			if (video) {
+				document.documentElement.style.display = 'none';
+				location.replace(origin + '/yt/?v=' + video[1] + (search ? '&' + search.slice(1) : '') + hash);
+			}
+			const to = video ? null : moved[key] ?? (path === pathname ? null : path);
 			if (to) {
 				document.documentElement.style.display = 'none';
 				location.replace(origin + to + search + hash);
