@@ -1,0 +1,267 @@
+---
+import '../styles/global.css';
+// Le lecteur du site, seul, pour un cadre dans une autre page (Ulysse, 2026-11-17 : « the "more videos" thing
+// should be disabled *every time* it is encountered, even in another web page »). Une vidéo YouTube mise dans
+// une autre page s'ouvre ici, avec les règles du lecteur du site (youtube-players-on-the-site.md) : le lecteur de
+// YouTube sans ses commandes et hors d'atteinte de la souris, les commandes du site, l'image couverte à la fin.
+// Adresse : /yt-cadre?v=<id>, avec &t=<secondes> pour un début et &auto=1 pour une lecture qui démarre seule ;
+// /yt-cadre?liste=1 pour une liste de vidéos, qui ne se lit pas ici. Hors du site : aucun lien n'y mène.
+---
+
+<html lang="fr-CA">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex" />
+		<title>Une vidéo · Ulysse Gagné</title>
+	</head>
+	<body>
+		<div id="stage">
+			<div id="box">
+				<iframe id="player" title="La vidéo" tabindex="-1" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+				<div id="hit" title="Lecture ou pause"></div>
+				<div id="end"><strong>Fin</strong><span>Cliquer pour la revoir.</span></div>
+				<div id="note"></div>
+			</div>
+			<div id="bar">
+				<button id="pp" type="button" aria-label="Lecture ou pause">▶</button>
+				<div id="seek"><div id="fill"></div></div>
+				<span id="time"></span>
+				<button id="spd" type="button" title="Vitesse">1×</button>
+				<button id="snd" type="button">Son</button>
+				<button id="cp" type="button" title="Copier le lien de la vidéo">Lien</button>
+				<button id="fs" type="button" title="Plein écran" aria-label="Plein écran">⛶</button>
+			</div>
+		</div>
+	</body>
+</html>
+
+<style>
+	html,
+	body {
+		height: 100%;
+		margin: 0;
+		overflow: hidden;
+		background: #000;
+	}
+	#stage {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		height: 100%;
+		background: #000;
+	}
+	#box {
+		position: relative;
+		flex: 1;
+		min-height: 0;
+		background: #000;
+		overflow: hidden;
+	}
+	#player {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		border: 0;
+		pointer-events: none;
+	}
+	#hit {
+		position: absolute;
+		inset: 0;
+		z-index: 5;
+		cursor: pointer;
+	}
+	#end,
+	#note {
+		position: absolute;
+		inset: 0;
+		z-index: 6;
+		display: none;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 0.4em;
+		padding: 1em;
+		background: var(--wash);
+		color: var(--text);
+		text-align: center;
+	}
+	#end {
+		cursor: pointer;
+	}
+	#end.on,
+	#note.on {
+		display: flex;
+	}
+	#end span {
+		color: var(--muted);
+	}
+	#note {
+		z-index: 7;
+	}
+	#bar {
+		display: flex;
+		align-items: center;
+		gap: 0.4em;
+		padding: 0.35em 0.4em;
+		background: var(--wash);
+		border-top: 1px solid var(--line);
+		font-size: 14px;
+	}
+	button {
+		font: inherit;
+		font-size: 0.9em;
+		padding: 0.15em 0.55em;
+		border: 1px solid var(--line);
+		border-radius: var(--radius);
+		background: var(--bg);
+		color: var(--text);
+		cursor: pointer;
+		white-space: nowrap;
+	}
+	button:hover {
+		border-color: var(--accent);
+		color: var(--accent);
+	}
+	#pp {
+		min-width: 2.4em;
+	}
+	#seek {
+		flex: 1;
+		min-width: 3em;
+		height: 8px;
+		border-radius: 4px;
+		background: var(--line);
+		overflow: hidden;
+		cursor: pointer;
+	}
+	#fill {
+		width: 0;
+		height: 100%;
+		background: var(--accent);
+		pointer-events: none;
+	}
+	#time {
+		color: var(--muted);
+		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
+	}
+	/* Un cadre étroit garde l'essentiel : lecture, la barre, le son. */
+	@media (max-width: 420px) {
+		#spd,
+		#cp {
+			display: none;
+		}
+	}
+	@media (max-width: 300px) {
+		#time {
+			display: none;
+		}
+	}
+</style>
+
+<script is:inline>
+	function $(i) { return document.getElementById(i); }
+	function secondsOf(t) {
+		t = (t || '').toLowerCase();
+		if (/^\d+$/.test(t)) return Math.min(+t, 86400);
+		var m = t.match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/);
+		return m ? +(m[1] || 0) * 3600 + +(m[2] || 0) * 60 + +(m[3] || 0) : 0;
+	}
+	function say(text) { $('note').textContent = text; $('note').className = 'on'; $('bar').style.display = 'none'; }
+	var q = new URLSearchParams(location.search);
+	var id = /^[A-Za-z0-9_-]{11}$/.test(q.get('v') || '') ? q.get('v') : null;
+	var start = secondsOf(q.get('t')), auto = q.get('auto') == '1';
+	var player = null, state = -1, dur = 0, over = false, speeds = [1, 1.25, 1.5, 1.75, 2], si = 0;
+	function fmt(s) {
+		s = Math.max(0, Math.floor(s || 0));
+		var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60;
+		return (h ? h + ':' + (m < 10 ? '0' : '') : '') + m + ':' + (x < 10 ? '0' : '') + x;
+	}
+	function now() { try { return player.getCurrentTime() || 0; } catch (e) { return 0; } }
+	function draw() {
+		var t = now();
+		$('fill').style.width = (dur > 0 ? Math.min(100, (100 * t) / dur) : 0) + '%';
+		$('time').textContent = dur > 0 ? fmt(t) + ' / ' + fmt(dur) : '';
+		$('pp').textContent = state == 1 ? '❚❚' : '▶';
+	}
+	function show() { $('end').className = over ? 'on' : ''; draw(); }
+	function toggle() {
+		if (!player) return;
+		if (over) { over = false; try { player.seekTo(0, true); } catch (e) {} }
+		try { if (state == 1) player.pauseVideo(); else player.playVideo(); } catch (e) {}
+		show();
+	}
+	function full() { if (document.fullscreenElement) document.exitFullscreen(); else $('stage').requestFullscreen(); }
+	function move(by) { try { player.seekTo(Math.min(Math.max(0, now() + by), dur), true); } catch (e) {} setTimeout(draw, 300); }
+	function onYouTubeIframeAPIReady() {
+		player = new YT.Player('player', {
+			events: {
+				onReady: function () {
+					setInterval(function () { try { dur = player.getDuration() || 0; } catch (e) {} draw(); }, 200);
+					if (auto) { try { player.playVideo(); } catch (e) {} }
+				},
+				onStateChange: function (e) {
+					state = e.data;
+					if (state == 1) over = false;
+					if (state == 0) { over = true; try { player.stopVideo(); } catch (x) {} }
+					show();
+				},
+				onError: function (e) {
+					var c = e.data;
+					say(c == 101 || c == 150 ? 'Le propriétaire de cette vidéo ne permet pas de la voir hors de YouTube.'
+						: c == 100 ? 'Cette vidéo n’existe pas, ou elle est privée.'
+						: 'Cette vidéo ne peut pas être lue ici (erreur ' + c + ').');
+				},
+			},
+		});
+	}
+	if (!document.fullscreenEnabled) $('fs').hidden = true;
+	if (!id) {
+		say(q.get('liste') ? 'Une liste de vidéos YouTube : elle ne se lit pas ici. Une vidéo seule, par son lien, oui.'
+			: 'Pas de vidéo à cette adresse.');
+	} else {
+		$('player').src = 'https://www.youtube-nocookie.com/embed/' + id + '?enablejsapi=1&origin=' + encodeURIComponent(location.origin)
+			+ '&rel=0&fs=0&playsinline=1&iv_load_policy=3&controls=0&disablekb=1' + (start ? '&start=' + start : '');
+		$('hit').addEventListener('click', toggle);
+		$('end').addEventListener('click', toggle);
+		$('pp').addEventListener('click', toggle);
+		$('seek').addEventListener('click', function (ev) {
+			if (!player) return;
+			var r = $('seek').getBoundingClientRect();
+			over = false;
+			try { player.seekTo(Math.min(1, Math.max(0, (ev.clientX - r.left) / r.width)) * dur, true); } catch (e) {}
+			show();
+			setTimeout(draw, 300);
+		});
+		$('spd').addEventListener('click', function () {
+			si = (si + 1) % speeds.length;
+			try { player.setPlaybackRate(speeds[si]); } catch (e) {}
+			$('spd').textContent = String(speeds[si]).replace('.', ',') + '×';
+		});
+		$('snd').addEventListener('click', function () {
+			try {
+				if (player.isMuted()) { player.unMute(); $('snd').textContent = 'Son'; }
+				else { player.mute(); $('snd').textContent = 'Muet'; }
+			} catch (e) {}
+		});
+		$('cp').addEventListener('click', function () {
+			var t = Math.floor(now()), url = 'https://youtu.be/' + id + (t > 5 ? '?t=' + t : '');
+			function done(word) { $('cp').textContent = word; setTimeout(function () { $('cp').textContent = 'Lien'; }, 1500); }
+			if (navigator.clipboard) navigator.clipboard.writeText(url).then(function () { done('Copié'); }, function () { done('Refusé'); });
+			else done('Refusé');
+		});
+		$('fs').addEventListener('click', full);
+		document.addEventListener('keydown', function (ev) {
+			if (!player || ev.metaKey || ev.ctrlKey || ev.altKey) return;
+			if (ev.key == ' ' || ev.key == 'k') { ev.preventDefault(); toggle(); }
+			else if (ev.key == 'ArrowLeft' || ev.key == 'ArrowRight') { ev.preventDefault(); move(ev.key == 'ArrowLeft' ? -5 : 5); }
+			else if (ev.key == 'f' && document.fullscreenEnabled) full();
+			else if (ev.key == 'm') $('snd').click();
+		});
+		var s = document.createElement('script');
+		s.src = 'https://www.youtube.com/iframe_api';
+		document.head.appendChild(s);
+	}
+</script>
