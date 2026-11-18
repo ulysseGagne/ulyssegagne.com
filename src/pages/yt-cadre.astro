@@ -172,7 +172,7 @@ import '../styles/global.css';
 	function say(text) { $('note').textContent = text; $('note').className = 'on'; $('bar').style.display = 'none'; }
 	var q = new URLSearchParams(location.search);
 	var id = /^[A-Za-z0-9_-]{11}$/.test(q.get('v') || '') ? q.get('v') : null;
-	var start = secondsOf(q.get('t')), auto = q.get('auto') == '1';
+	var start = secondsOf(q.get('t')), auto = q.get('auto') == '1', demo = q.get('demo');
 	var player = null, state = -1, dur = 0, over = false, speeds = [1, 1.25, 1.5, 1.75, 2], si = 0;
 	function fmt(s) {
 		s = Math.max(0, Math.floor(s || 0));
@@ -200,7 +200,23 @@ import '../styles/global.css';
 			events: {
 				onReady: function () {
 					setInterval(function () { try { dur = player.getDuration() || 0; } catch (e) {} draw(); }, 200);
-					if (auto) { try { player.playVideo(); } catch (e) {} }
+					if (auto) {
+						// Une lecture qui démarre seule : avec le son si le navigateur le permet, sinon en muet.
+						try { player.playVideo(); } catch (e) {}
+						setTimeout(function () {
+							if (state != 1 && state != 3) {
+								try { player.mute(); $('snd').textContent = 'Muet'; player.playVideo(); } catch (e) {}
+							}
+						}, 1500);
+					}
+					if (demo) {
+						// Pour vérifier le lecteur sans clic : lecture muette, une pause, puis la fin.
+						try { player.mute(); $('snd').textContent = 'Muet'; player.playVideo(); } catch (e) {}
+						setTimeout(function () { try { player.pauseVideo(); } catch (e) {} }, 4000);
+						setTimeout(function () {
+							try { player.seekTo(Math.max(0, (player.getDuration() || 0) - (demo == 'fin' ? 18 : 4)), true); player.playVideo(); } catch (e) {}
+						}, 8000);
+					}
 				},
 				onStateChange: function (e) {
 					state = e.data;
