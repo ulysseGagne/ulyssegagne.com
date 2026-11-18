@@ -15,18 +15,18 @@ conversation: true
 >
 > 📝 **Exercice 1 · La largeur d'abord, sur un gros graphe**
 >
-> Donne la suite des états visités, de S jusqu'à X, en largeur d'abord. Les enfants se prennent de gauche à droite.
+> Donne la suite des états visités, de S jusqu'à X, en largeur d'abord. Les enfants se prennent de gauche à droite. Écris-la, ou {==trace-la sur le tableau blanc==}{>>Certaines réponses sont des dessins. Le tuteur ouvre un tableau blanc à côté de la conversation : l'étudiant y trace sa réponse comme sur papier à l'examen, et le tuteur la lit. Écrire reste tout aussi bon : l'étudiant choisit.<<}, à côté.
 >
 >
 > > [!figure] Le graphe, en quatre niveaux
 > >
 > > ![[tuteur-graphe-de-s-a-x.svg|S ; K, B, M ; D et F sous K, F aussi et H sous B, J et P sous M ; L sous D, N et Q sous F, R sous J, T et X sous P. Le but est X.]]
 
-> [!ulysse] Ulysse · une image
-> {==![[tuteur-graphe-de-s-a-x-trace-en-rouge.svg|L'image du graphe, avec un trait rouge par-dessus les états : S, K, B, M, D, F, H, J, P, L, N, Q, R, T, X.]]==}{>>Quinze lettres à écrire dans l'ordre, ou un trait à tracer : répondre en dessinant ne coûte presque rien, et un exercice qu'on aurait sauté se fait.<<}
+> [!ulysse] Ulysse · sur le tableau blanc
+> {==![[tuteur-graphe-de-s-a-x-trace-en-rouge.svg|Le graphe sur le tableau blanc, avec un trait rouge par-dessus les états : S, K, B, M, D, F, H, J, P, L, N, Q, R, T, X.]]==}{>>Quinze lettres à écrire dans l'ordre, ou un trait à tracer : répondre en dessinant ne coûte presque rien, et un exercice qu'on aurait sauté se fait.<<}
 
 > [!claude] Claude
-> Je lis ton tracé : S, K, B, M, D, F, H, J, P, L, N, Q, R, T, X.
+> {==Je lis ton tracé==}{>>Avant de juger, le tuteur écrit ce qu'il voit sur le tableau. Une mauvaise lecture se rattrape tout de suite, et la réponse reste dans la conversation, pas seulement sur le tableau.<<} : S, K, B, M, D, F, H, J, P, L, N, Q, R, T, X.
 >
 > ✅ Juste, du premier coup. Et tu n'es pas repassé par F, qu'on atteint à la fois par K et par B : {==les doublons de la semaine passée==}{>>Le tuteur se souvient de ce qui avait accroché la semaine d'avant, et le vérifie au passage, sans en faire un exercice de plus.<<}, c'est réglé.
 >
