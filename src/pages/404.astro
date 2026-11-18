@@ -26,10 +26,20 @@ const pages = (await getCollection('pages', (page) => !page.data.noindex))
 				key = decodeURIComponent(path).normalize('NFC').toLowerCase();
 			} catch {}
 			// A video by its link, at its short address: ulyssegagne.com/yt/<id> is /yt/?v=<id> (the video page shows the short one).
-			const video = /^\/yt\/([A-Za-z0-9_-]{11})$/.exec(path);
+			let video = /^\/yt\/([A-Za-z0-9_-]{11})$/.exec(path);
 			if (video) {
 				document.documentElement.style.display = 'none';
 				location.replace(origin + '/yt?v=' + video[1] + (search ? '&' + search.slice(1) : '') + hash);
+			} else if (pathname.startsWith('/yt/')) {
+				// A whole YouTube link pasted after /yt/ (ulyssegagne.com/yt/https://www.youtube.com/watch?v=<id>) leads to the short address.
+				const pasted = pathname.slice(4) + search + hash;
+				const link = /(?:youtube(?:-nocookie)?\.com\/(?:shorts\/|live\/|embed\/|watch\?(?:.*&)?v=)|youtu\.be\/)([A-Za-z0-9_-]{11})/.exec(pasted);
+				if (link) {
+					video = link;
+					const t = /[?&#]t=([0-9hms]+)/.exec(pasted);
+					document.documentElement.style.display = 'none';
+					location.replace(origin + '/yt?v=' + link[1] + (t ? '&t=' + t[1] : ''));
+				}
 			}
 			const to = video ? null : moved[key] ?? (path === pathname ? null : path);
 			if (to) {
