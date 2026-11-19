@@ -40,6 +40,58 @@ function decode(path: string) {
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!-- Dark mode: the device's own setting, unless the switch at the top right was used on this device. Set before
+		     the page shows, so it never flashes in the other mode. A choice is kept only while it differs from the
+		     device's setting, so a device that changes later is followed again. Three clicks in a row on the switch
+		     open the private view instead (public/notes.js), and leave the mode as it was. -->
+		<script is:inline>
+			{
+				const root = document.documentElement;
+				const system = matchMedia('(prefers-color-scheme: dark)');
+				const choice = () => {
+					try {
+						return localStorage.getItem('theme');
+					} catch {
+						return null;
+					}
+				};
+				const show = (dark) => {
+					root.dataset.theme = dark ? 'dark' : 'light';
+					document.querySelector('.theme')?.setAttribute('aria-checked', String(dark));
+				};
+				const follow = () => show(choice() ? choice() === 'dark' : system.matches);
+				follow();
+				system.addEventListener('change', follow);
+				addEventListener('storage', follow);
+				addEventListener('pageshow', follow);
+				addEventListener('DOMContentLoaded', follow);
+
+				let clicks = 0;
+				let last = 0;
+				// A double or triple click on the switch selects no words around it.
+				document.addEventListener('mousedown', (event) => {
+					if (event.detail > 1 && event.target.closest?.('.theme')) event.preventDefault();
+				});
+				document.addEventListener('click', (event) => {
+					if (!event.target.closest?.('.theme')) return;
+					const now = Date.now();
+					clicks = now - last < 500 ? clicks + 1 : 1;
+					last = now;
+					// The third click leaves the mode alone: the first two already brought it back.
+					if (clicks === 3) {
+						clicks = 0;
+						document.dispatchEvent(new Event('private-view'));
+						return;
+					}
+					const dark = root.dataset.theme !== 'dark';
+					try {
+						if (dark === system.matches) localStorage.removeItem('theme');
+						else localStorage.setItem('theme', dark ? 'dark' : 'light');
+					} catch {}
+					show(dark);
+				});
+			}
+		</script>
 		<title>{title === name ? name : `${title} · ${name}`}</title>
 		<meta name="description" content={description} />
 		{noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={url} />}
@@ -67,30 +119,33 @@ function decode(path: string) {
 		<slot name="head" />
 	</head>
 	<body>
-		<nav class="path" aria-label="Chemin">
-			{
-				parts.length > 0 ? (
-					<a href="/">ulyssegagne.com</a>
-				) : (
-					<>
-						<span class="here">ulyssegagne.com</span>
-						<span class="sep">/</span>
-					</>
-				)
-			}
-			{
-				crumbs.map((crumb) => (
-					<>
-						<span class="sep">/</span>
-						{crumb.href ? <a href={crumb.href}>{crumb.name}</a> : <span class="here">{crumb.name}</span>}
-					</>
-				))
-			}
-		</nav>
+		<header class="top">
+			<nav class="path" aria-label="Chemin">
+				{
+					parts.length > 0 ? (
+						<a href="/">ulyssegagne.com</a>
+					) : (
+						<>
+							<span class="here">ulyssegagne.com</span>
+							<span class="sep">/</span>
+						</>
+					)
+				}
+				{
+					crumbs.map((crumb) => (
+						<>
+							<span class="sep">/</span>
+							{crumb.href ? <a href={crumb.href}>{crumb.name}</a> : <span class="here">{crumb.name}</span>}
+						</>
+					))
+				}
+			</nav>
+			<button class="theme" type="button" role="switch" aria-checked="false" aria-label="Mode sombre" title="Mode sombre"></button>
+		</header>
 		<main>
 			<slot />
 		</main>
-		<!-- The private view: a padlock at the top, which asks for the password (public/notes.js). -->
+		<!-- The private view: three clicks in a row on the dark mode switch ask for the password (public/notes.js). -->
 		<script is:inline src="/notes.js" defer></script>
 	</body>
 </html>

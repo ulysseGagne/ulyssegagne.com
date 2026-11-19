@@ -192,3 +192,9 @@ Un commentaire reste dans le fichier, mais pas sur la page. Il y en a un juste i
 ```md
 ![L'écran d'accueil](./images/hide-and-stalk-1-home-screen.png) ![Choisir une question](./images/hide-and-stalk-2-pick-a-question.png) ![La carte](./images/hide-and-stalk-3-map-nearest-avelo-station.png)
 ```
+
+## Le mode sombre
+
+Le site suit le réglage de l'appareil. L'interrupteur en haut à droite de chaque page le fait passer au sombre ou au clair, et cet appareil s'en souvient.
+
+Chaque élément de ce guide existe dans les deux modes. Les dessins passent au sombre avec la page ; les photos et les captures restent telles quelles.

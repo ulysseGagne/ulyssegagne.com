@@ -61,7 +61,7 @@ First locked page: `public/never-enough/behind-the-scenes.html`.
 
 ## The private view
 
-Every page has a small padlock at the top right. It asks for a password, once per device; after that it switches the page between what visitors see, « Public », and the private view, « Privé », where Ulysse comments on the site and Claude answers:
+Nothing on a page shows it. Three clicks in a row on the dark mode switch, at the top right of every page, ask for a password, once per device; after that, the same three clicks switch the page between what visitors see and the private view, where Ulysse comments on the site and Claude answers (its « Page publique » goes back too). The first two clicks change the mode and change it back; the third opens the door:
 
 - Select any words, then « Commenter »: a note on those words, right under their paragraph. « Répondre » under each of the tutor demo's comments; a note on the whole page in the box at the top. It all saves by itself as it's typed, on any device, the iPhone included; written offline, it waits on the device and leaves once the connection is back.
 - Claude's notes sit at the top, folded under their titles, or under the words they're about; some offer options to pick, and each has a box to answer.
@@ -114,7 +114,7 @@ Then check that the deploy went through (the repository's Actions tab; one that 
 ## The code
 
 - `src/content.config.ts`: `site/` as a collection of pages.
-- `src/pages/[...slug].astro`: one HTML file per page. `src/layouts/Base.astro`: the path at the top (`ulyssegagne.com/` on the welcome page, `ulyssegagne.com / a-propos / course` on the others), and the tags for search engines and link previews.
-- `src/styles/global.css`: the design system.
+- `src/pages/[...slug].astro`: one HTML file per page. `src/layouts/Base.astro`: the path at the top (`ulyssegagne.com/` on the welcome page, `ulyssegagne.com / a-propos / course` on the others), the dark mode switch at the top right, and the tags for search engines and link previews. The mode follows the device's setting, unless the switch was used on this device (`localStorage.theme`, kept only while it differs from the device's setting); a script in the `<head>` sets it before the page shows, so it never flashes the other way.
+- `src/styles/global.css`: the design system, its colors as variables at the top, light, then dark (`:root[data-theme='dark']`). In dark mode a drawing (SVG) turns dark by inversion; photos and screenshots stay as they are.
 - `src/plugins/`: Obsidian's extras, French spacing, and `rehype-external-links.mjs`: a link to another site opens in a new tab (`target="_blank" rel="noopener noreferrer"`), in the Markdown by itself and, in a layout's own `<a>`, with `NEW_TAB` when `isOutside(href, Astro.site)`.
 - `src/pages/404.astro`, with the old addresses of pages that moved in `src/moved.ts`, and `sitemap.xml.ts`; `public/`: the favicon and `robots.txt`.

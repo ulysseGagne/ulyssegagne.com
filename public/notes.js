@@ -1,13 +1,14 @@
-// The site's private view, for Ulysse. A small padlock at the top of every page asks for the password, once per
-// device; after that it switches the page between what visitors see (« Public ») and the private view (« Privé »).
+// The site's private view, for Ulysse. Three clicks in a row on the dark mode switch, at the top right of every page
+// (src/layouts/Base.astro), ask for the password, once per device; after that, they switch the page between what
+// visitors see and the private view. Nothing on the public page shows that it exists.
 // In the private view, select any words to comment on them, or write a note on the whole page; Claude's notes and
 // options sit beside the words they're about, or at the top. Everything saves by itself as it's typed, to the
 // private side's server (worker/index.js); written offline, it waits on the device and leaves once the connection
 // is back. Claude reads it all from the Mac: scripts/notes.mjs, and the README, « The private view ».
 (() => {
 	const main = document.querySelector('main');
-	const path = document.querySelector('nav.path');
-	if (!main || !path) return;
+	const top = document.querySelector('header.top');
+	if (!main || !top) return;
 
 	const store = {
 		get(name) {
@@ -51,12 +52,7 @@
 
 	document.head.append(Object.assign(el('style'), { textContent: STYLES() }));
 
-	// ---------- the padlock at the top, and the password ----------
-
-	const SHUT = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5.3a3 3 0 0 1 6 0V7" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="3" y="7" width="10" height="7.5" rx="1.6" fill="currentColor"/></svg>';
-	const OPEN = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5.3a3 3 0 0 1 5.9-.9" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="3" y="7" width="10" height="7.5" rx="1.6" fill="currentColor"/></svg>';
-	const toggle = el('button', 'pv-switch', { type: 'button' });
-	path.append(toggle);
+	// ---------- the way in: three clicks on the dark mode switch, and the password ----------
 
 	const lock = el('form', 'pv-lock pv-ui');
 	lock.hidden = true;
@@ -64,23 +60,22 @@
 		'<label for="pv-password">Mot de passe de la vue privée</label>' +
 		'<div class="pv-row"><input id="pv-password" type="password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" required><button type="submit">Ouvrir</button></div>' +
 		'<p class="pv-msg" role="status"></p>';
-	path.after(lock);
+	top.after(lock);
 	const lockMessage = lock.querySelector('.pv-msg');
 
-	function paint() {
-		toggle.innerHTML = key ? `${OPEN}<span>${open ? 'Privé' : 'Public'}</span>` : SHUT;
-		toggle.classList.toggle('on', open);
-		toggle.title = !key ? 'Vue privée' : open ? 'Revenir à la page publique' : 'Passer à la vue privée';
-		toggle.setAttribute('aria-label', toggle.title);
-	}
-
-	toggle.addEventListener('click', () => {
+	// Base.astro sends « private-view » on the third click in a row. A device without the key gets the password
+	// field (the same clicks put it away again); a device with it goes to the private view, or back to the public page.
+	document.addEventListener('private-view', () => {
 		if (!key) {
 			lock.hidden = !lock.hidden;
 			if (!lock.hidden) lock.querySelector('input').focus();
 			return;
 		}
 		setOpen(!open);
+	});
+
+	lock.addEventListener('keydown', (event) => {
+		if (event.key === 'Escape') lock.hidden = true;
 	});
 
 	lock.addEventListener('submit', async (event) => {
@@ -123,7 +118,7 @@
 		return [...new Uint8Array(bits)].map((b) => b.toString(16).padStart(2, '0')).join('');
 	}
 
-	// The key stopped working (a new password): back to the padlock; what this device wrote waits for it.
+	// The key stopped working (a new password): back to the password field; what this device wrote waits for it.
 	function forget(message) {
 		key = null;
 		store.set('notes.key', null);
@@ -135,7 +130,6 @@
 	function setOpen(value) {
 		open = value;
 		store.set('notes.mode', open ? 'private' : null);
-		paint();
 		if (open) start();
 		else stop();
 	}
@@ -760,28 +754,25 @@
 		if (open && !typing && !Object.keys(pending).length && Date.now() - loadedAt > 60000) load();
 	});
 
-	paint();
 	if (open) start();
 	else if (key && Object.keys(pending).length) flush();
 
 	function STYLES() {
 		return `
 [class*="pv-"][hidden]{display:none!important}
-.path{position:relative;padding-right:4.5rem}
-.pv-switch{position:absolute;top:calc(1.25rem - 9px);right:.5rem;display:inline-flex;align-items:center;gap:5px;min-height:34px;padding:6px 9px;border:0;border-radius:999px;background:none;color:var(--muted);font:inherit;font-size:13px;line-height:1;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.pv-switch svg{width:14px;height:14px;flex:none}
-.pv-switch:hover{color:var(--accent)}
-.pv-switch.on{background:var(--accent);color:#fff}
 .pv-lock{max-width:var(--measure);margin:.75rem auto 0;padding:0 1rem;font-size:14px}
-.pv-lock label{display:block;margin-bottom:6px;color:var(--accent)}
+.pv-lock label{display:block;margin-bottom:6px;color:var(--pv-blue)}
 .pv-row{display:flex;gap:8px}
 .pv-lock input{flex:1;min-width:0;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font:inherit;font-size:16px}
-.pv-lock button,.pv-comment{border:0;border-radius:8px;background:var(--accent);color:#fff;font:inherit;font-size:16px;font-weight:600;padding:9px 16px;cursor:pointer}
+.pv-lock button,.pv-comment{border:0;border-radius:8px;background:var(--pv-fill);color:#fff;font:inherit;font-size:16px;font-weight:600;padding:9px 16px;cursor:pointer}
 .pv-msg{min-height:1.3em;margin:6px 0 0;color:var(--muted)}
 /* Everything private is blue, Claude's notes and Ulysse's alike: the panel, the cards, the marks, the buttons. The
    public page keeps its black, white and yellow, and blue only in its links' words: a private mark is dark words on a
-   blue wash, a link blue words on white, so what visitors see and what they don't never look alike. */
-:root{--pv-blue:#0066cc;--pv-ink:#123a66;--pv-muted:#4c6c93;--pv-line:#c4d8f1;--pv-wash:#eaf2fc;--pv-panel:#f5f9fe}
+   blue wash, a link blue words on white, so what visitors see and what they don't never look alike.
+   In dark mode, the same blues on dark: light blue words on deep blue cards. A button keeps Apple's deep blue in both,
+   so its white words stay readable. */
+:root{--pv-blue:#0066cc;--pv-fill:#0066cc;--pv-ink:#123a66;--pv-muted:#4c6c93;--pv-line:#c4d8f1;--pv-wash:#eaf2fc;--pv-panel:#f5f9fe;--pv-field:#fff;--pv-chip:#d6e6f9;--pv-pressed:#dcebfb;--pv-hint:#7d97b8;--pv-mark:rgba(0,102,204,.13);--pv-mark-line:rgba(0,102,204,.6);--pv-mark-on:rgba(0,102,204,.3);--pv-glow:rgba(0,102,204,.25);--pv-focus:rgba(0,102,204,.15)}
+:root[data-theme="dark"]{--pv-blue:#2997ff;--pv-ink:#d3e3f7;--pv-muted:#8fb1d9;--pv-line:#2a4a72;--pv-wash:#15243a;--pv-panel:#121d2d;--pv-field:#0f1a28;--pv-chip:#132a45;--pv-pressed:#1a3556;--pv-hint:#6d8bb1;--pv-mark:rgba(41,151,255,.2);--pv-mark-line:rgba(41,151,255,.7);--pv-mark-on:rgba(41,151,255,.38);--pv-glow:rgba(41,151,255,.35);--pv-focus:rgba(41,151,255,.25)}
 .pv-panel{margin:0 0 2.5rem;padding:14px 16px;border:1px solid var(--pv-line);border-left:3px solid var(--pv-blue);border-radius:8px;background:var(--pv-panel);color:var(--pv-ink);font-size:14.5px;line-height:1.5}
 .pv-bar{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
 .pv-bar>strong{color:var(--pv-blue)}
@@ -795,13 +786,13 @@
 .pv-card{display:block;margin:8px 0;padding:10px 12px;border:1px solid var(--pv-line);border-left:3px solid var(--pv-blue);border-radius:8px;background:var(--pv-wash);color:var(--pv-ink);font-size:14.5px;font-weight:400;line-height:1.5;text-align:left;transition:box-shadow .15s}
 .pv-panel .pv-card{margin:0}
 .pv-card.pv-done{opacity:.6}
-.pv-card.on{box-shadow:0 0 0 3px rgba(0,102,204,.25)}
+.pv-card.on{box-shadow:0 0 0 3px var(--pv-glow)}
 .c-note .pv-card,.c-note .pv-group{font-size:13.5px}
 .pv-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;margin-bottom:2px;color:var(--pv-muted);font-size:12.5px}
 .pv-who{color:var(--pv-blue);font-weight:700}
 .pv-del{margin-left:auto;font-size:12.5px}
-.pv-chip{display:inline-block;padding:0 7px;border-radius:999px;background:#d6e6f9;color:var(--pv-blue);font-size:11.5px;font-weight:600;line-height:1.6}
-.pv-todo{background:var(--pv-blue);color:#fff}
+.pv-chip{display:inline-block;padding:0 7px;border-radius:999px;background:var(--pv-chip);color:var(--pv-blue);font-size:11.5px;font-weight:600;line-height:1.6}
+.pv-todo{background:var(--pv-fill);color:#fff}
 .pv-summary{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;cursor:pointer;font-weight:600;list-style:none}
 .pv-summary::-webkit-details-marker{display:none}
 .pv-summary::before{content:'▸';color:var(--pv-blue);font-size:12px}
@@ -809,22 +800,22 @@ details[open]>.pv-summary::before{content:'▾'}
 .pv-body p,.pv-body ul,.pv-body ol{margin:.45em 0}
 .pv-body ul,.pv-body ol{padding-left:1.3em}
 .pv-body a{color:var(--pv-blue)}
-.pv-text{display:block;width:100%;min-height:40px;margin:6px 0 0;padding:8px 10px;border:1px solid var(--pv-line);border-radius:6px;background:#fff;color:var(--pv-ink);font:inherit;font-size:16px;line-height:1.45;resize:none;overflow:hidden}
-.pv-text::placeholder{color:#7d97b8}
-.pv-text:focus{outline:none;border-color:var(--pv-blue);box-shadow:0 0 0 2px rgba(0,102,204,.15)}
+.pv-text{display:block;width:100%;min-height:40px;margin:6px 0 0;padding:8px 10px;border:1px solid var(--pv-line);border-radius:6px;background:var(--pv-field);color:var(--pv-ink);font:inherit;font-size:16px;line-height:1.45;resize:none;overflow:hidden}
+.pv-text::placeholder{color:var(--pv-hint)}
+.pv-text:focus{outline:none;border-color:var(--pv-blue);box-shadow:0 0 0 2px var(--pv-focus)}
 .pv-thread{margin-top:4px}
 .pv-reply{margin-top:8px;padding-top:6px;border-top:1px solid var(--pv-line)}
 .pv-quote{margin:2px 0;color:var(--pv-muted);font-size:13px}
 .pv-choices{display:grid;gap:6px;margin:8px 0}
-.pv-choice{display:grid;gap:3px;padding:8px 10px;border:1px solid var(--pv-line);border-radius:8px;background:#fff;color:var(--pv-ink);font:inherit;font-size:14px;line-height:1.45;text-align:left;cursor:pointer}
-.pv-choice[aria-pressed="true"]{border-color:var(--pv-blue);background:#dcebfb;box-shadow:inset 0 0 0 1px var(--pv-blue)}
+.pv-choice{display:grid;gap:3px;padding:8px 10px;border:1px solid var(--pv-line);border-radius:8px;background:var(--pv-field);color:var(--pv-ink);font:inherit;font-size:14px;line-height:1.45;text-align:left;cursor:pointer}
+.pv-choice[aria-pressed="true"]{border-color:var(--pv-blue);background:var(--pv-pressed);box-shadow:inset 0 0 0 1px var(--pv-blue)}
 .pv-choice-label{font-weight:600}
 .pv-choice-cost{color:var(--pv-muted)}
-mark.pv-mark{background:rgba(0,102,204,.13);box-shadow:0 1.5px 0 rgba(0,102,204,.6);color:inherit;border-radius:2px;cursor:pointer}
-mark.pv-mark.on{background:rgba(0,102,204,.3)}
+mark.pv-mark{background:var(--pv-mark);box-shadow:0 1.5px 0 var(--pv-mark-line);color:inherit;border-radius:2px;cursor:pointer}
+mark.pv-mark.on{background:var(--pv-mark-on)}
 .pv-comment{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:1000;padding:12px 22px;border-radius:999px;box-shadow:0 2px 12px rgba(0,0,0,.22);-webkit-user-select:none;user-select:none}
 .pv-cmt-reply{display:block;margin-top:4px}
-@media print{.pv-switch,.pv-lock,.pv-comment{display:none!important}}
+@media print{.pv-lock,.pv-comment{display:none!important}}
 `;
 	}
 })();
