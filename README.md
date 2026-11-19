@@ -16,7 +16,7 @@ An address with a slash at the end, `ulyssegagne.com/tuteur/`, lands on the same
 
 Every element a page can use, with the Markdown that makes it: `site/guide-de-style.md`, at ulyssegagne.com/guide-de-style (hidden from search engines).
 
-Two pages for a friend live outside `site/`, in `public/`, in English, in the site's look but not its build, and out of search engines: `never-enough.html`, at ulyssegagne.com/never-enough, which plays clips of Dr. K's YouTube videos in order (its words and its list of clips are in the file itself), and `never-enough/behind-the-scenes.html`, how it was made, a locked page (« Lock a page », below).
+Two pages for friends are Astro pages instead, in `src/pages/`, in English, on the same layout as every page (the path, the dark mode switch, the private view) and out of search engines: `never-enough.astro`, at ulyssegagne.com/never-enough, which plays clips of Dr. K's YouTube videos in order (its words and its list of clips are in the file itself), and `study-system.astro`, at ulyssegagne.com/study-system, the message to paste into Claude Code for the public copy of the tutor.
 
 ## Add a page
 
@@ -57,7 +57,7 @@ The repository is public, so a page behind a password may reach it only encrypte
 2. `node scripts/lock-page.mjs <source.md> public/<path>.html` asks for the password and writes the page, its text as ciphertext (AES-GCM, the key made from the password by PBKDF2) that the visitor's browser decrypts. The answer counts without case, spaces, accents or emoji.
 3. The password goes nowhere else: not in a file, a commit message or a log.
 
-First locked page: `public/never-enough/behind-the-scenes.html`.
+No page is locked right now: the first one, `/never-enough/behind-the-scenes`, was taken down.
 
 ## The private view
 
@@ -114,7 +114,7 @@ Then check that the deploy went through (the repository's Actions tab; one that 
 ## The code
 
 - `src/content.config.ts`: `site/` as a collection of pages.
-- `src/pages/[...slug].astro`: one HTML file per page. `src/layouts/Base.astro`: the path at the top (`ulyssegagne.com/` on the welcome page, `ulyssegagne.com / a-propos / course` on the others), the dark mode switch at the top right, and the tags for search engines and link previews. The mode follows the device's setting, unless the switch was used on this device (`localStorage.theme`, kept only while it differs from the device's setting); a script in the `<head>` sets it before the page shows, so it never flashes the other way.
+- `src/pages/[...slug].astro`: one HTML file per page. `src/layouts/Base.astro`: the path at the top (`ulyssegagne.com/` on the welcome page, `ulyssegagne.com / a-propos / course` on the others), the dark mode switch at the top right, and the tags for search engines and link previews. A page is in French unless it passes `lang="en"`, as the two pages for friends do. The mode follows the device's setting, unless the switch was used on this device (`localStorage.theme`, kept only while it differs from the device's setting); a script in the `<head>` sets it before the page shows, so it never flashes the other way.
 - `src/styles/global.css`: the design system, its colors as variables at the top, light, then dark (`:root[data-theme='dark']`). In dark mode a drawing (SVG) turns dark by inversion; photos and screenshots stay as they are.
 - `src/plugins/`: Obsidian's extras, French spacing, and `rehype-external-links.mjs`: a link to another site opens in a new tab (`target="_blank" rel="noopener noreferrer"`), in the Markdown by itself and, in a layout's own `<a>`, with `NEW_TAB` when `isOutside(href, Astro.site)`.
 - `src/pages/404.astro`, with the old addresses of pages that moved in `src/moved.ts`, and `sitemap.xml.ts`; `public/`: the favicon and `robots.txt`.

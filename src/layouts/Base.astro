@@ -9,9 +9,12 @@ interface Props {
 	noindex?: boolean;
 	// The page's image in link previews: its photo, if it has one.
 	image?: { src: string; width: number; height: number };
+	// The page's language: French, like the site, or English (the two pages for friends).
+	lang?: 'fr' | 'en';
 }
 
-const { title, description, noindex = false, image } = Astro.props;
+const { title, description, noindex = false, image, lang = 'fr' } = Astro.props;
+const en = lang === 'en';
 const name = 'Ulysse Gagné';
 
 // This page's address, as it reads in the browser: its path, without the .html of its file.
@@ -36,7 +39,7 @@ function decode(path: string) {
 }
 ---
 
-<html lang="fr-CA">
+<html lang={en ? 'en' : 'fr-CA'}>
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -100,7 +103,7 @@ function decode(path: string) {
 		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 		<meta property="og:type" content="website" />
 		<meta property="og:site_name" content={name} />
-		<meta property="og:locale" content="fr_CA" />
+		<meta property="og:locale" content={en ? 'en_CA' : 'fr_CA'} />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		{!noindex && <meta property="og:url" content={url} />}
@@ -120,7 +123,7 @@ function decode(path: string) {
 	</head>
 	<body>
 		<header class="top">
-			<nav class="path" aria-label="Chemin">
+			<nav class="path" aria-label={en ? 'Path' : 'Chemin'}>
 				{
 					parts.length > 0 ? (
 						<a href="/">ulyssegagne.com</a>
@@ -140,7 +143,7 @@ function decode(path: string) {
 					))
 				}
 			</nav>
-			<button class="theme" type="button" role="switch" aria-checked="false" aria-label="Mode sombre" title="Mode sombre"></button>
+			<button class="theme" type="button" role="switch" aria-checked="false" aria-label={en ? 'Dark mode' : 'Mode sombre'} title={en ? 'Dark mode' : 'Mode sombre'}></button>
 		</header>
 		<main>
 			<slot />

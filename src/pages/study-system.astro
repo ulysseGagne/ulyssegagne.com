@@ -1,0 +1,74 @@
+---
+import Base from '../layouts/Base.astro';
+// The study system, for a friend: one message to paste into Claude Code, which clones the public copy of the tutor
+// and guides them, one small step at a time, to a first lesson. In English, linked only from the welcome page
+// (and /nora), out of search engines.
+---
+
+<Base
+	title="The study system"
+	description="A Socratic tutor for your own courses, in Claude Code: paste one message, and your Claude guides you to your first lesson."
+	noindex
+	lang="en"
+>
+	<h1>The study system</h1>
+	<p>This tutor teaches you your own courses, one slide at a time, then has you do the exercises, without ever giving you the answer before you try. You find it yourself, so you remember it.</p>
+	<p>On your Mac, open the Claude app, go to the Code tab, pick a folder (Documents, for example), and paste this message:</p>
+	<div class="prompt">
+		<pre><code id="prompt">Clone https://github.com/ulysseGagne/study-system into this folder, then read study-system/CLAUDE.md and follow it. It's my first time: guide me one step at a time.</code></pre>
+		<button class="copy" type="button" id="copy">Copy</button>
+	</div>
+	<p>Your Claude takes it from there, one small step at a time, up to your first lesson. When it asks permission to run a command, you can accept.</p>
+	<p><strong>Work in progress:</strong> <a href="/tuteur">the tutor demo</a>, in French, shows what a session looks like.</p>
+
+	<script is:inline>
+		const button = document.getElementById('copy');
+		button.addEventListener('click', async () => {
+			const text = document.getElementById('prompt').textContent;
+			try {
+				await navigator.clipboard.writeText(text);
+			} catch {
+				const range = document.createRange();
+				range.selectNodeContents(document.getElementById('prompt'));
+				const selection = getSelection();
+				selection.removeAllRanges();
+				selection.addRange(range);
+				document.execCommand('copy');
+			}
+			button.textContent = 'Copied';
+			setTimeout(() => (button.textContent = 'Copy'), 2000);
+		});
+	</script>
+</Base>
+
+<style>
+	/* The message to paste, with its copy button */
+
+	.prompt {
+		margin: 0 0 1em;
+	}
+
+	.prompt pre {
+		margin: 0;
+		white-space: pre-wrap;
+		overflow-wrap: anywhere;
+	}
+
+	.copy {
+		display: block;
+		margin: 8px 0 0 auto;
+		padding: 5px 14px;
+		border: 1px solid var(--text);
+		border-radius: var(--radius);
+		background: var(--text);
+		color: var(--bg);
+		font: inherit;
+		font-size: 15px;
+		line-height: 1.4;
+		cursor: pointer;
+	}
+
+	.copy:hover {
+		opacity: 0.85;
+	}
+</style>
